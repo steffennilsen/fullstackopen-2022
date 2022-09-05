@@ -1,26 +1,16 @@
 import { useState } from "react";
 
-const Button = ({ label, set }) => <button onClick={set}>{label}</button>;
+const Button = ({ text, set }) => <button onClick={set}>{text}</button>;
 
-const Feedback = ({ states }) => (
-  <div>
-    <h1>give feedback</h1>
-    <div>
-      {Object.keys(states).map((key) => (
-        <Button
-          label={key}
-          set={() => states[key].set(states[key].get + 1)}
-          key={key}
-        />
-      ))}
-    </div>
-  </div>
+const StatisticLine = ({ text, value }) => (
+  <tr>
+    <td>{text}</td>
+    <td>{value}</td>
+  </tr>
 );
 
-const Statistics = ({ states }) => {
-  const total = Object.keys(states)
-    .map((key) => states[key].get)
-    .reduce((a, b) => a + b);
+const Statistics = ({ good, neutral, bad }) => {
+  const total = [good, neutral, bad].reduce((a, b) => a + b);
 
   if (!total) {
     return (
@@ -31,20 +21,22 @@ const Statistics = ({ states }) => {
     );
   }
 
-  const average = total ? (states.good.get - states.bad.get) / total : 0;
-  const positive = total ? states.good.get / total : 0;
+  const average = ((good - bad) / total).toFixed(1);
+  const positive = ((good / total) * 100).toFixed(1);
 
   return (
     <div>
       <h1>statistics</h1>
-      {Object.keys(states).map((key) => (
-        <div key={key}>
-          {key} {states[key].get}
-        </div>
-      ))}
-      <div>all {total}</div>
-      <div>average {average}</div>
-      <div>positive {positive}</div>
+      <table>
+        <tbody>
+          <StatisticLine text="good" value={good} />
+          <StatisticLine text="neutral" value={neutral} />
+          <StatisticLine text="bad" value={bad} />
+          <StatisticLine text="all" value={total} />
+          <StatisticLine text="average" value={average} />
+          <StatisticLine text="positive" value={`${positive} %`} />
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -53,25 +45,16 @@ const App = () => {
   const [good, setGood] = useState(0);
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
-  const states = {
-    good: {
-      get: good,
-      set: setGood,
-    },
-    neutral: {
-      get: neutral,
-      set: setNeutral,
-    },
-    bad: {
-      get: bad,
-      set: setBad,
-    },
-  };
 
   return (
     <div>
-      <Feedback states={states} />
-      <Statistics states={states} />
+      <div>
+        <h1>give feedback</h1>
+        <Button text="good" set={() => setGood(good + 1)} />
+        <Button text="neutral" set={() => setNeutral(neutral + 1)} />
+        <Button text="bad" set={() => setBad(bad + 1)} />
+      </div>
+      <Statistics good={good} neutral={neutral} bad={bad} />
     </div>
   );
 };
