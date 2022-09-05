@@ -6,44 +6,57 @@ const Feedback = ({ states }) => (
   <div>
     <h1>give feedback</h1>
     <div>
-      {states.map(({ label, set, get }, index) => (
-        <Button label={label} set={() => set(get + 1)} key={index} />
+      {Object.keys(states).map((key) => (
+        <Button
+          label={key}
+          set={() => states[key].set(states[key].get + 1)}
+          key={key}
+        />
       ))}
     </div>
   </div>
 );
-const Statistics = ({ states }) => (
-  <div>
-    <h1>statistics</h1>
-    {states.map(({ label, get }, index) => (
-      <div key={index}>
-        {label} {get}
-      </div>
-    ))}
-  </div>
-);
+
+const Statistics = ({ states }) => {
+  const total = Object.keys(states)
+    .map((key) => states[key].get)
+    .reduce((a, b) => a + b);
+  const average = total ? (states.good.get - states.bad.get) / total : 0;
+  const positive = total ? states.good.get / total : 0;
+
+  return (
+    <div>
+      <h1>statistics</h1>
+      {Object.keys(states).map((key) => (
+        <div key={key}>
+          {key} {states[key].get}
+        </div>
+      ))}
+      <div>all {total}</div>
+      <div>average {average}</div>
+      <div>positive {positive}</div>
+    </div>
+  );
+};
 
 const App = () => {
   const [good, setGood] = useState(0);
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
-  const states = [
-    {
-      label: "good",
+  const states = {
+    good: {
       get: good,
       set: setGood,
     },
-    {
-      label: "neutral",
+    neutral: {
       get: neutral,
       set: setNeutral,
     },
-    {
-      label: "bad",
+    bad: {
       get: bad,
       set: setBad,
     },
-  ];
+  };
 
   return (
     <div>
