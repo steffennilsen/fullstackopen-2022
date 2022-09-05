@@ -21,6 +21,16 @@ const Statistics = ({ states }) => {
   const total = Object.keys(states)
     .map((key) => states[key].get)
     .reduce((a, b) => a + b);
+
+  if (!total) {
+    return (
+      <div>
+        <h1>statistics</h1>
+        <div>No feedback given</div>
+      </div>
+    );
+  }
+
   const average = total ? (states.good.get - states.bad.get) / total : 0;
   const positive = total ? states.good.get / total : 0;
 
