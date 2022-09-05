@@ -1,0 +1,1 @@
+Note that `favicon.ico` was ommitted from diagrams whenever encountered
