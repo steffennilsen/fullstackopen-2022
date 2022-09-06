@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-const Anecdote = ({ anecodte, points }) => (
+const Anecdote = ({ anecdote, points }) => (
   <div>
-    <div>{anecodte}</div>
+    <div>{anecdote}</div>
     <div>has {points} votes</div>
   </div>
 );
@@ -30,13 +30,25 @@ const App = () => {
     setPoints(_points);
   };
 
+  const highestVoteIndex = Object.values(points).reduce(
+    (prevIndex, currValue, index) =>
+      currValue > points[prevIndex] ? index : prevIndex,
+    0
+  );
+
   return (
     <div>
-      <Anecdote anecodte={anecdotes[selected]} points={points[selected]} />
+      <h1>Anecdote of the day</h1>
+      <Anecdote anecdote={anecdotes[selected]} points={points[selected]} />
       <div>
         <button onClick={() => vote()}>vote</button>
         <button onClick={() => setSelected(roll())}>next anecdote</button>
       </div>
+      <h1>Anecdote with the most votes</h1>
+      <Anecdote
+        anecdote={anecdotes[highestVoteIndex]}
+        points={points[highestVoteIndex]}
+      />
     </div>
   );
 };
