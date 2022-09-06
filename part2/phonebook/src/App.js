@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const PhonebookForm = ({ name, persons, number }) => {
+const PersonForm = ({ name, persons, number }) => {
   const addEntry = (event) => {
     event.preventDefault();
 
@@ -49,19 +49,34 @@ const PhonebookForm = ({ name, persons, number }) => {
   );
 };
 
-const NumberList = ({ persons }) => (
+const Person = ({ person }) => (
+  <tr>
+    <td>{person.name}</td>
+    <td>{person.number}</td>
+  </tr>
+);
+
+const Persons = ({ persons }) => (
   <table>
     <tbody>
       {persons.map((person) => (
-        <tr key={person.id}>
-          <td>{person.id}</td>
-          <td>{person.name}</td>
-          <td>{person.number}</td>
-        </tr>
+        <Person person={person} key={person.id} />
       ))}
     </tbody>
   </table>
 );
+
+const Filter = ({ filter, setFilter }) => {
+  return (
+    <div>
+      <label>filter shown with</label>
+      <input
+        value={filter}
+        onChange={(event) => setFilter(event.target.value)}
+      />
+    </div>
+  );
+};
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -83,29 +98,17 @@ const App = () => {
 
   return (
     <div>
-      <div>
-        <h2>Phonebook</h2>
-        <div>
-          <label>filter shown with</label>
-          <input
-            value={filter}
-            onChange={(event) => setFilter(event.target.value)}
-          />
-        </div>
-      </div>
-      <div>
-        <h2>add a new</h2>
-        {/* Really should wait with this until event propogation gets introduced? */}
-        <PhonebookForm
-          persons={{ get: persons, set: setPersons }}
-          name={{ get: newName, set: setNewName }}
-          number={{ get: newNumber, set: setNewNumber }}
-        />
-      </div>
-      <div>
-        <h2>Numbers</h2>
-        <NumberList persons={filterPersons()} />
-      </div>
+      <h2>Phonebook</h2>
+      <Filter filter={filter} setFilter={setFilter} />
+      <h3>add a new</h3>
+      {/* Really should wait with this until event propogation gets introduced? */}
+      <PersonForm
+        persons={{ get: persons, set: setPersons }}
+        name={{ get: newName, set: setNewName }}
+        number={{ get: newNumber, set: setNewNumber }}
+      />
+      <h2>Numbers</h2>
+      <Persons persons={filterPersons()} />
     </div>
   );
 };
