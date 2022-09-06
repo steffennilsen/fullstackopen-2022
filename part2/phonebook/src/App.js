@@ -3,7 +3,14 @@ import { useState } from "react";
 const PhonebookForm = ({ name, persons }) => {
   const addEntry = (event) => {
     event.preventDefault();
-    persons.set(persons.get.concat({ name: name.get }));
+
+    /** purposedly not doing .toLowerCase or similiar since its not specified */
+    if (persons.get.map((person) => person.name).includes(name.get)) {
+      window.alert(`${name.get} is already added to phonebook`);
+      return false;
+    }
+
+    persons.set([...persons.get, { name: name.get }]);
     name.set("");
   };
 
