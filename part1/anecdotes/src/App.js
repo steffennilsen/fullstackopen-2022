@@ -1,5 +1,12 @@
 import { useState } from "react";
 
+const Anecdote = ({ anecodte, points }) => (
+  <div>
+    <div>{anecodte}</div>
+    <div>has {points} votes</div>
+  </div>
+);
+
 const App = () => {
   const anecdotes = [
     "If it hurts, do it more often.",
@@ -12,12 +19,22 @@ const App = () => {
   ];
 
   const [selected, setSelected] = useState(0);
+  const [points, setPoints] = useState(
+    anecdotes.reduce((c, p, i) => ({ ...c, ...{ [i]: 0 } }), {})
+  );
+
   const roll = () => Math.ceil(Math.random() * anecdotes.length) - 1;
+  const vote = () => {
+    const _points = { ...points };
+    _points[selected] += 1;
+    setPoints(_points);
+  };
 
   return (
     <div>
-      <div>{anecdotes[selected]}</div>
+      <Anecdote anecodte={anecdotes[selected]} points={points[selected]} />
       <div>
+        <button onClick={() => vote()}>vote</button>
         <button onClick={() => setSelected(roll())}>next anecdote</button>
       </div>
     </div>
