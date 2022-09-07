@@ -9,17 +9,21 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [filterPersons, setFilterPersons] = useState([]);
 
   useEffect(() => {
     personService.getAll().then((persons) => setPersons(persons));
   }, []);
 
-  const filterPersons = () =>
-    filter.length === 0
-      ? persons
-      : persons.filter((person) =>
-          person.name.toLowerCase().includes(filter.toLowerCase())
-        );
+  useEffect(() => {
+    setFilterPersons(
+      filter.length === 0
+        ? persons
+        : persons.filter((person) =>
+            person.name.toLowerCase().includes(filter.toLowerCase())
+          )
+    );
+  }, [filter, persons]);
 
   /** This really should have been an event */
   const handleDeletePerson = (person) => {
@@ -47,7 +51,7 @@ const App = () => {
       />
       <h2>Numbers</h2>
       <Persons
-        persons={filterPersons()}
+        persons={filterPersons}
         handleDeletePerson={handleDeletePerson}
       />
     </div>

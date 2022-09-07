@@ -4,12 +4,9 @@ const PersonForm = ({ name, persons, number }) => {
   const addEntry = async (event) => {
     event.preventDefault();
 
-    /**
-     * purposedly not filtering on existing numbers, since its not specified
-     */
-    if (persons.get.map((person) => person.name).includes(name.get)) {
-      window.alert(`${name.get} is already added to phonebook`);
-      return false;
+    const person = persons.get.find((person) => person.name === name.get);
+    if (person) {
+      return updateEntry(person);
     }
 
     const dbPerson = await personService.create({
@@ -17,7 +14,24 @@ const PersonForm = ({ name, persons, number }) => {
       number: number.get,
     });
     persons.set([...persons.get, dbPerson]);
+    name.set("");
+    number.set("");
+  };
 
+  const updateEntry = async (person) => {
+    const confirm = window.confirm(
+      `${name.get} is already added to phonebook, replace the old number with a new one?`
+    );
+
+    if (!confirm) {
+      return false;
+    }
+
+    const dbPerson = await personService.update({
+      ...person,
+      number: number.get,
+    });
+    persons.set([...persons.get.filter((_) => _.id !== person.id), dbPerson]);
     name.set("");
     number.set("");
   };
