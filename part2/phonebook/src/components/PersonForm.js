@@ -1,5 +1,7 @@
+import personService from "../services/personService";
+
 const PersonForm = ({ name, persons, number }) => {
-  const addEntry = (event) => {
+  const addEntry = async (event) => {
     event.preventDefault();
 
     /**
@@ -10,14 +12,12 @@ const PersonForm = ({ name, persons, number }) => {
       return false;
     }
 
-    /**
-     * numbers set as strings due to format issues like dashes, and its not specified
-     * `id: persons.get.length + 1` because dummy data is 1 indexed 🤮🤮🤮
-     */
-    persons.set([
-      ...persons.get,
-      { name: name.get, number: number.get, id: persons.get.length + 1 },
-    ]);
+    const dbPerson = await personService.create({
+      name: name.get,
+      number: number.get,
+    });
+    persons.set([...persons.get, dbPerson]);
+
     name.set("");
     number.set("");
   };
