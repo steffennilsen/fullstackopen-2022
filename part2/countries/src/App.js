@@ -48,7 +48,10 @@ const App = () => {
   return (
     <div>
       <Filter get={filter} set={setFilter}></Filter>
-      <CountryList countries={filterCountries()}></CountryList>
+      <CountryList
+        countries={filterCountries()}
+        setFilter={setFilter}
+      ></CountryList>
     </div>
   );
 };
