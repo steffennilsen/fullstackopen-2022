@@ -3,7 +3,7 @@ const Person = ({ person, handleDeletePerson }) => (
     <td>{person.name}</td>
     <td>{person.number}</td>
     <td>
-      <button onClick={() => handleDeletePerson(person.id)}>delete</button>
+      <button onClick={() => handleDeletePerson(person)}>delete</button>
     </td>
   </tr>
 );

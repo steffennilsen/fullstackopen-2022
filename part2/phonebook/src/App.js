@@ -22,10 +22,17 @@ const App = () => {
         );
 
   /** This really should have been an event */
-  const handleDeletePerson = (id) =>
-    personService
-      .remove(id)
-      .then(() => setPersons(persons.filter((person) => person.id !== id)));
+  const handleDeletePerson = (person) => {
+    const confirm = window.confirm(`Delete ${person.name}?`);
+
+    if (confirm) {
+      personService
+        .remove(person.id)
+        .then(() =>
+          setPersons(persons.filter((_person) => _person.id !== person.id))
+        );
+    }
+  };
 
   return (
     <div>
