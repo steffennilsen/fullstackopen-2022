@@ -1,15 +1,14 @@
-const Person = ({ person }) => (
-  <tr>
-    <td>{person.name}</td>
-    <td>{person.number}</td>
-  </tr>
-);
+import Person from "./Person";
 
-const Persons = ({ persons }) => (
+const Persons = ({ persons, handleDeletePerson }) => (
   <table>
     <tbody>
       {persons.map((person) => (
-        <Person person={person} key={person.id} />
+        <Person
+          person={person}
+          key={person.id}
+          handleDeletePerson={handleDeletePerson}
+        />
       ))}
     </tbody>
   </table>

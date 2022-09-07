@@ -21,6 +21,12 @@ const App = () => {
           person.name.toLowerCase().includes(filter.toLowerCase())
         );
 
+  /** This really should have been an event */
+  const handleDeletePerson = (id) =>
+    personService
+      .remove(id)
+      .then(() => setPersons(persons.filter((person) => person.id !== id)));
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -33,7 +39,10 @@ const App = () => {
         number={{ get: newNumber, set: setNewNumber }}
       />
       <h2>Numbers</h2>
-      <Persons persons={filterPersons()} />
+      <Persons
+        persons={filterPersons()}
+        handleDeletePerson={handleDeletePerson}
+      />
     </div>
   );
 };
