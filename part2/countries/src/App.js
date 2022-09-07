@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
+const COUNTRY_DISPLAY_LIMIT = 10;
+
 const Country = ({ country }) => (
   <div>
     <h1>{country.name.common}</h1>
@@ -8,12 +10,12 @@ const Country = ({ country }) => (
     <div>area: {country.area}</div>
     <h3>languages:</h3>
     <ul>
-      {Object.entries(country.languages).map((entry, value) => (
+      {Object.entries(country.languages).map((entry) => (
         <li key={entry[0]}>{entry[1]}</li>
       ))}
     </ul>
     <div>
-      <img alt={`${country} flag`} src={country.flags.png}></img>
+      <img alt={`${country} flag`} src={country.flags.png} />
     </div>
   </div>
 );
@@ -23,19 +25,10 @@ const CountryList = ({ countries }) => {
     return <div>No matches, specify another filter</div>;
   }
 
-  if (countries.length > 10) {
+  if (countries.length > COUNTRY_DISPLAY_LIMIT) {
     return <div>Too many matches, specify another filter</div>;
   }
 
-  /**
-   * TODO
-   *
-   * United States Minor Outlying Islands
-   * United States Virgin Islands
-   * United States
-   *
-   * need to match on exact?
-   */
   if (countries.length === 1) {
     return <Country country={countries[0]}></Country>;
   }
@@ -68,12 +61,29 @@ const App = () => {
     });
   }, []);
 
-  const filterCountries = () =>
-    filter.length === 0
-      ? countries
-      : countries.filter((country) =>
-          country.name.common.toLowerCase().includes(filter.toLowerCase())
-        );
+  const filterCountries = () => {
+    const filterLowerCase = filter.toLowerCase();
+    const filtered =
+      filter.length === 0
+        ? countries
+        : countries.filter((country) =>
+            country.name.common.toLowerCase().includes(filterLowerCase)
+          );
+
+    /**
+     * Cornercase where name of country is part of another
+     */
+    if (filtered.length < COUNTRY_DISPLAY_LIMIT) {
+      const country = filtered.find(
+        (country) => country.name.common.toLowerCase() === filterLowerCase
+      );
+      if (country) {
+        return [country];
+      }
+    }
+
+    return filtered;
+  };
 
   return (
     <div>
