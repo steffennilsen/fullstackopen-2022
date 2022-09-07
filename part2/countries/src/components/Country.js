@@ -1,3 +1,5 @@
+import Weather from "./Weather";
+
 /**
  * As for the capitals:
  * https://en.wikipedia.org/wiki/List_of_countries_with_multiple_capitals
@@ -20,6 +22,11 @@ const Country = ({ country }) => (
     <div>
       <img alt={`${country} flag`} src={country.flags.png} />
     </div>
+    <Weather
+      lat={country.capitalInfo.latlng[0]}
+      lon={country.capitalInfo.latlng[1]}
+      name={country.capital[0]}
+    />
   </div>
 );
 
