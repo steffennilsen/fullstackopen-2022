@@ -1,49 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import CountryList from "./components/CountryList";
+import Filter from "./components/Filter";
 
-const COUNTRY_DISPLAY_LIMIT = 10;
-
-const Country = ({ country }) => (
-  <div>
-    <h1>{country.name.common}</h1>
-    <div>capital: {country.capital}</div>
-    <div>area: {country.area}</div>
-    <h3>languages:</h3>
-    <ul>
-      {Object.entries(country.languages).map((entry) => (
-        <li key={entry[0]}>{entry[1]}</li>
-      ))}
-    </ul>
-    <div>
-      <img alt={`${country} flag`} src={country.flags.png} />
-    </div>
-  </div>
-);
-
-const CountryList = ({ countries }) => {
-  if (countries.length === 0) {
-    return <div>No matches, specify another filter</div>;
-  }
-
-  if (countries.length > COUNTRY_DISPLAY_LIMIT) {
-    return <div>Too many matches, specify another filter</div>;
-  }
-
-  if (countries.length === 1) {
-    return <Country country={countries[0]}></Country>;
-  }
-
-  return countries.map((country) => (
-    <div key={country.name.common}>{country.name.common}</div>
-  ));
-};
-
-const Filter = ({ get, set }) => (
-  <div>
-    <label>find countries</label>
-    <input value={get} onChange={(event) => set(event.target.value)} />
-  </div>
-);
+export const COUNTRY_DISPLAY_LIMIT = 10;
 
 const App = () => {
   const [countries, setCountries] = useState([]);
