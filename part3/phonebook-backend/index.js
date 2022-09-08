@@ -28,7 +28,18 @@ const data = [
 ];
 
 app.all('/', (request, response) => response.status(400).end());
+
+app.get('/info', (request, response) =>
+  response.send(
+    `<div><p>Phonebook has infor for ${
+      data.length
+    } people</p><p>${Date()}</p></div>`,
+  ),
+);
+app.all('/info', (request, response) => response.status(400).end());
+
 app.all('/api', (request, response) => response.status(400).end());
+
 app.get('/api/persons', (request, response) => response.json(data));
 app.all('/api/persons', (request, response) => response.status(400).end());
 
