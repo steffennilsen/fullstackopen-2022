@@ -4,7 +4,7 @@ app.use(express.json());
 
 const PORT = 3001;
 
-let data = [
+let persons = [
   {
     id: 1,
     name: 'Arto Hellas',
@@ -32,7 +32,7 @@ app.all('/', (request, response) => response.status(405).end());
 app.get('/info', (request, response) =>
   response.send(
     `<div><p>Phonebook has infor for ${
-      data.length
+      persons.length
     } people</p><p>${Date()}</p></div>`,
   ),
 );
@@ -40,12 +40,42 @@ app.all('/info', (request, response) => response.status(405).end());
 
 app.all('/api', (request, response) => response.status(405).end());
 
-app.get('/api/persons', (request, response) => response.json(data));
+app.get('/api/persons', (request, response) => response.json(persons));
+app.post('/api/persons', (request, response) => {
+  if (request.get('Content-Type') !== 'application/json') {
+    return response.status(400).json({
+      error: 'expect Content-Type: application/json',
+    });
+  }
+
+  const body = request.body;
+  if (!body.content) {
+    return response.status(400).json({
+      error: 'content missing',
+    });
+  }
+
+  /**
+   * Generate a new id for the phonebook entry with the Math.random function 🤮🤮🤮
+   * -1 from Number.MAX_SAFE_INTEGER just to be extra super duper safe since the rng can make it exceed it
+   **/
+  const id = Math.floor(Math.random() * (Number.MAX_SAFE_INTEGER - 1));
+
+  const person = {
+    content: body.content,
+    important: body.important || false,
+    date: new Date(),
+    id,
+  };
+
+  persons = persons.concat(person);
+  return response.json(person);
+});
 app.all('/api/persons', (request, response) => response.status(405).end());
 
 app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id);
-  const person = data.find((entry) => entry.id === id);
+  const person = persons.find((entry) => entry.id === id);
 
   if (person) {
     return response.json(person);
@@ -55,10 +85,10 @@ app.get('/api/persons/:id', (request, response) => {
 });
 app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id);
-  const person = data.find((entry) => entry.id === id);
+  const person = persons.find((entry) => entry.id === id);
 
   if (person) {
-    data = data.filter((entry) => entry.id !== id);
+    persons = persons.filter((entry) => entry.id !== id);
     return response.status(204).end();
   }
 

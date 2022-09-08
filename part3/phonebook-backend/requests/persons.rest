@@ -2,6 +2,40 @@
 GET http://localhost:3001/api/persons
 
 ###
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "content": "valid body",
+  "important": true
+}
+
+### missing content
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "important": true
+}
+
+### missing content
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+}
+
+### missing content
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+### wrong MIME
+POST http://localhost:3001/api/persons
+Content-Type: text/plain
+
+"test"
+
+###
 GET http://localhost:3001/api/persons/1
 
 ### No id === 5
