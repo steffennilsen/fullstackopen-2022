@@ -25,7 +25,7 @@ const App = () => {
     );
   }, [filter, persons]);
 
-  /** This really should have been an event */
+  /** This really should have been an event, or redux type global store */
   const handleDeletePerson = (person) => {
     const confirm = window.confirm(`Delete ${person.name}?`);
 
