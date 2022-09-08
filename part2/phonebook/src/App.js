@@ -3,6 +3,7 @@ import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 import Filter from "./components/Filter";
 import personService from "./services/personService";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -10,6 +11,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
   const [filterPersons, setFilterPersons] = useState([]);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     personService.getAll().then((persons) => setPersons(persons));
@@ -30,24 +32,31 @@ const App = () => {
     const confirm = window.confirm(`Delete ${person.name}?`);
 
     if (confirm) {
-      personService
-        .remove(person.id)
-        .then(() =>
-          setPersons(persons.filter((_person) => _person.id !== person.id))
-        );
+      personService.remove(person.id).then(() => {
+        setPersons(persons.filter((_person) => _person.id !== person.id));
+        addNotification(`Removed ${person.name}`, "warn");
+      });
     }
+  };
+
+  /** No message queue stack pop etc */
+  const addNotification = (content, type = "success", duration = 3000) => {
+    setNotification({ content, type });
+    setTimeout(() => setNotification(null), duration);
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notification} />
       <Filter filter={filter} setFilter={setFilter} />
       <h3>add a new</h3>
-      {/* Really should wait with this until event propogation gets introduced? */}
+      {/* At this point vuex or similar external state store looks like a better way */}
       <PersonForm
         persons={{ get: persons, set: setPersons }}
         name={{ get: newName, set: setNewName }}
         number={{ get: newNumber, set: setNewNumber }}
+        addNotification={addNotification}
       />
       <h2>Numbers</h2>
       <Persons

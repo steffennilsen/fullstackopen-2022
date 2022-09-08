@@ -1,6 +1,6 @@
 import personService from "../services/personService";
 
-const PersonForm = ({ name, persons, number }) => {
+const PersonForm = ({ name, persons, number, addNotification }) => {
   const addEntry = async (event) => {
     event.preventDefault();
 
@@ -9,13 +9,20 @@ const PersonForm = ({ name, persons, number }) => {
       return updateEntry(person);
     }
 
-    const dbPerson = await personService.create({
-      name: name.get,
-      number: number.get,
-    });
-    persons.set([...persons.get, dbPerson]);
-    name.set("");
-    number.set("");
+    personService
+      .create({
+        name: name.get,
+        number: number.get,
+      })
+      .then((dbPerson) => {
+        persons.set([...persons.get, dbPerson]);
+        name.set("");
+        number.set("");
+        addNotification(`Added ${dbPerson.name}`);
+      })
+      .catch((error) => {
+        addNotification(error.message);
+      });
   };
 
   const updateEntry = async (person) => {
@@ -27,13 +34,20 @@ const PersonForm = ({ name, persons, number }) => {
       return false;
     }
 
-    const dbPerson = await personService.update({
-      ...person,
-      number: number.get,
-    });
-    persons.set([...persons.get.filter((_) => _.id !== person.id), dbPerson]);
-    name.set("");
-    number.set("");
+    personService
+      .update({
+        ...person,
+        number: number.get,
+      })
+      .then((dbPerson) => {
+        persons.set([
+          ...persons.get.filter((_) => _.id !== person.id),
+          dbPerson,
+        ]);
+        name.set("");
+        number.set("");
+        addNotification(`Updated ${dbPerson.name}`);
+      });
   };
 
   return (
