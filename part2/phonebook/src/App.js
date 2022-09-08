@@ -27,15 +27,27 @@ const App = () => {
     );
   }, [filter, persons]);
 
-  /** This really should have been an event, or redux type global store */
+  /** This really should be redux type global store action kind of thing  */
   const handleDeletePerson = (person) => {
     const confirm = window.confirm(`Delete ${person.name}?`);
 
     if (confirm) {
-      personService.remove(person.id).then(() => {
-        setPersons(persons.filter((_person) => _person.id !== person.id));
-        addNotification(`Removed ${person.name}`, "warn");
-      });
+      personService
+        .remove(person.id)
+        .then(() => {
+          setPersons(persons.filter((_person) => _person.id !== person.id));
+          addNotification(`Removed ${person.name}`, "warn");
+        })
+        .catch((error) => {
+          if (error.response.status === 404) {
+            // remove locally
+            setPersons(persons.filter((_person) => _person.id !== person.id));
+            addNotification(
+              `Information of ${person.name} has already been removed from server`,
+              "error"
+            );
+          }
+        });
     }
   };
 
