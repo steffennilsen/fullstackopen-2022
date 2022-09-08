@@ -43,6 +43,18 @@ app.all('/api', (request, response) => response.status(400).end());
 app.get('/api/persons', (request, response) => response.json(data));
 app.all('/api/persons', (request, response) => response.status(400).end());
 
+app.get('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id);
+  const person = data.find((entry) => entry.id === id);
+
+  if (person) {
+    return response.json(person);
+  }
+
+  return response.status(404).end();
+});
+app.all('/api/persons/:id', (request, response) => response.status(400).end());
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
