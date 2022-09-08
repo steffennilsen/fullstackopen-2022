@@ -4,7 +4,7 @@ app.use(express.json());
 
 const PORT = 3001;
 
-const data = [
+let data = [
   {
     id: 1,
     name: 'Arto Hellas',
@@ -27,7 +27,7 @@ const data = [
   },
 ];
 
-app.all('/', (request, response) => response.status(400).end());
+app.all('/', (request, response) => response.status(405).end());
 
 app.get('/info', (request, response) =>
   response.send(
@@ -36,12 +36,12 @@ app.get('/info', (request, response) =>
     } people</p><p>${Date()}</p></div>`,
   ),
 );
-app.all('/info', (request, response) => response.status(400).end());
+app.all('/info', (request, response) => response.status(405).end());
 
-app.all('/api', (request, response) => response.status(400).end());
+app.all('/api', (request, response) => response.status(405).end());
 
 app.get('/api/persons', (request, response) => response.json(data));
-app.all('/api/persons', (request, response) => response.status(400).end());
+app.all('/api/persons', (request, response) => response.status(405).end());
 
 app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id);
@@ -53,7 +53,18 @@ app.get('/api/persons/:id', (request, response) => {
 
   return response.status(404).end();
 });
-app.all('/api/persons/:id', (request, response) => response.status(400).end());
+app.delete('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id);
+  const person = data.find((entry) => entry.id === id);
+
+  if (person) {
+    data = data.filter((entry) => entry.id !== id);
+    return response.status(204).end();
+  }
+
+  return response.status(404).end();
+});
+app.all('/api/persons/:id', (request, response) => response.status(405).end());
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

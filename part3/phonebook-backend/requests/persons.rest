@@ -6,3 +6,9 @@ GET http://localhost:3001/api/persons/1
 
 ### No id === 5
 GET http://localhost:3001/api/persons/5
+
+###
+DELETE http://localhost:3001/api/persons/1
+
+### No id === 5
+DELETE http://localhost:3001/api/persons/5
