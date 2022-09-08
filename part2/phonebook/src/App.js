@@ -27,30 +27,6 @@ const App = () => {
     );
   }, [filter, persons]);
 
-  /** This really should be redux type global store action kind of thing  */
-  const handleDeletePerson = (person) => {
-    const confirm = window.confirm(`Delete ${person.name}?`);
-
-    if (confirm) {
-      personService
-        .remove(person.id)
-        .then(() => {
-          setPersons(persons.filter((_person) => _person.id !== person.id));
-          addNotification(`Removed ${person.name}`, "warn");
-        })
-        .catch((error) => {
-          if (error.response.status === 404) {
-            // remove locally
-            setPersons(persons.filter((_person) => _person.id !== person.id));
-            addNotification(
-              `Information of ${person.name} has already been removed from server`,
-              "error"
-            );
-          }
-        });
-    }
-  };
-
   /** No message queue stack pop etc */
   const addNotification = (content, type = "success", duration = 3000) => {
     setNotification({ content, type });
@@ -73,7 +49,8 @@ const App = () => {
       <h2>Numbers</h2>
       <Persons
         persons={filterPersons}
-        handleDeletePerson={handleDeletePerson}
+        setPersons={setPersons}
+        addNotification={addNotification}
       />
     </div>
   );
