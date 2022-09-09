@@ -1,15 +1,17 @@
 const express = require('express');
+const cors = require('cors');
 const morgan = require('morgan');
 const app = express();
 
+const PORT = process.env.PORT || 3001;
 app.use(
+  express.static('build'),
   morgan.token('body', (req, res) => JSON.stringify(req.body))(
     ':method :url :status :res[content-length] - :response-time ms :body',
   ),
+  cors(),
   express.json(),
 );
-
-const PORT = 3001;
 
 let persons = [
   {
