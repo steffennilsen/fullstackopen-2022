@@ -19,6 +19,9 @@ const PersonForm = ({ name, persons, number, addNotification }) => {
         name.set("");
         number.set("");
         addNotification(`Added ${dbPerson.name}`);
+      })
+      .catch((error) => {
+        addNotification(error.message, "warning");
       });
   };
 
@@ -44,6 +47,9 @@ const PersonForm = ({ name, persons, number, addNotification }) => {
         name.set("");
         number.set("");
         addNotification(`Updated ${dbPerson.name}`);
+      })
+      .catch((error) => {
+        addNotification(error.message, "error");
       });
   };
 
