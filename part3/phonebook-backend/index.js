@@ -27,8 +27,6 @@ let persons = [
   },
 ];
 
-app.all('/', (request, response) => response.status(405).end());
-
 app.get('/info', (request, response) =>
   response.send(
     `<div><p>Phonebook has infor for ${
@@ -37,8 +35,6 @@ app.get('/info', (request, response) =>
   ),
 );
 app.all('/info', (request, response) => response.status(405).end());
-
-app.all('/api', (request, response) => response.status(405).end());
 
 app.get('/api/persons', (request, response) => response.json(persons));
 app.post('/api/persons', (request, response) => {
@@ -111,6 +107,10 @@ app.delete('/api/persons/:id', (request, response) => {
   return response.status(404).end();
 });
 app.all('/api/persons/:id', (request, response) => response.status(405).end());
+
+app.use((request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' });
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
