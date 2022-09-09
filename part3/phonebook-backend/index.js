@@ -90,7 +90,7 @@ app.post('/api/persons', (request, response) => {
   };
 
   persons = persons.concat(person);
-  return response.json(person);
+  return response.status(201).json(person);
 });
 app.all('/api/persons', (request, response) => response.status(405).end());
 
