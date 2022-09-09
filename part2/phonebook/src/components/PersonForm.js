@@ -4,6 +4,11 @@ const PersonForm = ({ name, persons, number, addNotification }) => {
   const addEntry = async (event) => {
     event.preventDefault();
 
+    if (!name.get || !number.get) {
+      addNotification("Fill out all fields", "warn");
+      return false;
+    }
+
     const person = persons.get.find((person) => person.name === name.get);
     if (person) {
       return updateEntry(person);
@@ -21,7 +26,7 @@ const PersonForm = ({ name, persons, number, addNotification }) => {
         addNotification(`Added ${dbPerson.name}`);
       })
       .catch((error) => {
-        addNotification(error.message, "warning");
+        addNotification(error.message, "error");
       });
   };
 
