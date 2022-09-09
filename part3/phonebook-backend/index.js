@@ -115,6 +115,14 @@ app.delete('/api/persons/:id', (request, response) => {
 
   return response.status(404).end();
 });
+
+/**
+ * Almost tripped me when I tried PUT
+ *
+ * 3.9 phonebook backend step9
+ * Make the backend work with the phonebook frontend from the exercises of the previous part.
+ * Do not implement the functionality for making changes to the phone numbers yet, that will be implemented in exercise 3.17.
+ */
 app.all('/api/persons/:id', (request, response) => response.status(405).end());
 
 app.use((request, response) => {
