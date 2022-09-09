@@ -6,26 +6,43 @@ POST http://localhost:3001/api/persons
 Content-Type: application/json
 
 {
-  "content": "valid body",
-  "important": true
+  "name": "its a me, mario",
+  "number": "40401-2432"
 }
 
-### missing content
+### number to string
 POST http://localhost:3001/api/persons
 Content-Type: application/json
 
 {
-  "important": true
+  "name": "waluiiiiiiigiiiiiii",
+  "number": 404012432
 }
 
-### missing content
+### missing number entry
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "name": "its a me, mario"
+}
+
+### missing name entry
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+  "number": "40401-2432"
+}
+
+### missing entries
 POST http://localhost:3001/api/persons
 Content-Type: application/json
 
 {
 }
 
-### missing content
+### missing entries
 POST http://localhost:3001/api/persons
 Content-Type: application/json
 
@@ -33,7 +50,15 @@ Content-Type: application/json
 POST http://localhost:3001/api/persons
 Content-Type: text/plain
 
-"test"
+{
+  "name": "its a me, mario",
+  "number": "40401-2432"
+}
+
+### wrong MIME -- json as string auto infered
+POST http://localhost:3001/api/persons
+
+"{\"name\": \"its a me, mario\",\"number\": \"40401-2432\"}"
 
 ###
 GET http://localhost:3001/api/persons/1

@@ -49,22 +49,38 @@ app.post('/api/persons', (request, response) => {
   }
 
   const body = request.body;
-  if (!body.content) {
-    return response.status(400).json({
-      error: 'content missing',
+  /**
+   * no easy way to break a .forEach, without additional checking afterwards.
+   * nor can we use return as its part of the inner anonymous callback function,
+   *  so good old fashion for loop it is
+   * */
+  for (const key of ['name', 'number']) {
+    if (!body[key]) {
+      return response.status(400).json({
+        error: `missing ${key} entry`,
+      });
+    }
+  }
+
+  if (persons.find((_) => _.name === body.name)) {
+    return response.status(409).json({
+      error: 'name must be unique',
     });
   }
 
   /**
    * Generate a new id for the phonebook entry with the Math.random function 🤮🤮🤮
+   * fyi we cant set the seed on Math.random
    * -1 from Number.MAX_SAFE_INTEGER just to be extra super duper safe since the rng can make it exceed it
    **/
   const id = Math.floor(Math.random() * (Number.MAX_SAFE_INTEGER - 1));
 
+  /**
+   * Important to be concise with incoming form of number, either number or string, not both
+   */
   const person = {
-    content: body.content,
-    important: body.important || false,
-    date: new Date(),
+    name: body.name,
+    number: `${body.number}`,
     id,
   };
 
