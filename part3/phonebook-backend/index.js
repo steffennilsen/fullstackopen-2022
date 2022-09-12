@@ -1,9 +1,20 @@
+require('dotenv').config();
+
 const express = require('express');
+const mongoose = require('mongoose');
 const cors = require('cors');
 const morgan = require('morgan');
-const app = express();
+const chalk = require('chalk');
+const Person = require('./models/person');
 
+const chalkSuccess = chalk.green;
+const chalkWarn = chalk.bgYellow.black;
+const chalkError = chalk.bold.red;
+
+const app = express();
 const PORT = process.env.PORT || 3001;
+const URL = process.env.MONGODB_URI;
+
 app.use(
   express.static('build'),
   morgan.token('body', (req, res) => JSON.stringify(req.body))(
@@ -13,107 +24,100 @@ app.use(
   express.json(),
 );
 
-let persons = [
-  {
-    id: 1,
-    name: 'Arto Hellas',
-    number: '040-123456',
-  },
-  {
-    id: 2,
-    name: 'Ada Lovelace',
-    number: '39-44-5323523',
-  },
-  {
-    id: 3,
-    name: 'Dan Abramov',
-    number: '12-43-234345',
-  },
-  {
-    id: 4,
-    name: 'Mary Poppendieck',
-    number: '39-23-6423122',
-  },
-];
+mongoose
+  .connect(URL)
+  .then((result) =>
+    console.log(chalkSuccess(`connected to ${result.connections[0].host}`)),
+  )
+  .catch((error) =>
+    console.error(chalkError('error connecting to MongoDB:', error.message)),
+  );
 
-app.get('/info', (request, response) =>
-  response.send(
-    `<div><p>Phonebook has infor for ${
-      persons.length
-    } people</p><p>${Date()}</p></div>`,
-  ),
-);
+app.get('/info', async (request, response) => {
+  const count = await Person.estimatedDocumentCount();
+  return response.send(
+    `<div><p>Phonebook has info for ${count} people</p><p>${Date()}</p></div>`,
+  );
+});
 app.all('/info', (request, response) => response.status(405).end());
 
-app.get('/api/persons', (request, response) => response.json(persons));
-app.post('/api/persons', (request, response) => {
+app.get('/api/persons', async (request, response) => {
+  const persons = await Person.find({});
+  return response.json(persons);
+});
+app.post('/api/persons', async (request, response) => {
   if (request.get('Content-Type') !== 'application/json') {
     return response.status(400).json({
       error: 'expect Content-Type: application/json',
     });
   }
 
-  const body = request.body;
-  /**
-   * no easy way to break a .forEach, without additional checking afterwards.
-   * nor can we use return as its part of the inner anonymous callback function,
-   *  so good old fashion for loop it is
-   * */
-  for (const key of ['name', 'number']) {
-    if (!body[key]) {
-      return response.status(400).json({
-        error: `missing ${key} entry`,
-      });
-    }
-  }
-
-  if (persons.find((_) => _.name === body.name)) {
+  const existingPerson = await Person.findOne({ name: request.body.name });
+  if (existingPerson !== null) {
+    console.log(
+      chalkWarn(`POST /api/persons rejected, name exists`),
+      chalkWarn(JSON.stringify(existingPerson.name)),
+    );
     return response.status(409).json({
       error: 'name must be unique',
     });
   }
 
-  /**
-   * Generate a new id for the phonebook entry with the Math.random function 🤮🤮🤮
-   * fyi we cant set the seed on Math.random
-   * -1 from Number.MAX_SAFE_INTEGER just to be extra super duper safe since the rng can make it exceed it
-   **/
-  const id = Math.floor(Math.random() * (Number.MAX_SAFE_INTEGER - 1));
+  const person = new Person({
+    name: request.body.name,
+    number: `${request.body.number}`,
+  });
 
-  /**
-   * Important to be concise with incoming form of number, either number or string, not both
-   */
-  const person = {
-    name: body.name,
-    number: `${body.number}`,
-    id,
-  };
-
-  persons = persons.concat(person);
-  return response.status(201).json(person);
+  return person
+    .save()
+    .then((result) => {
+      console.log(chalkSuccess(`saved ${JSON.stringify(result)}`));
+      return response.status(201).json(result);
+    })
+    .catch((error) => {
+      console.warn(chalkWarn(JSON.stringify(person)));
+      return response.status(400).json({ error: error });
+    });
 });
 app.all('/api/persons', (request, response) => response.status(405).end());
 
-app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find((entry) => entry.id === id);
+app.get('/api/persons/:id', async (request, response) => {
+  return Person.findById(request.params.id)
+    .then((person) => {
+      if (person.statusCode) {
+        return response.status(statusCode).end();
+      }
 
-  if (person) {
-    return response.json(person);
-  }
+      return response.json(person);
+    })
+    .catch((error) => {
+      const idCastError = checkIdCastError(error);
+      if (!!idCastError) {
+        return response.status(400).json({ error: idCastError });
+      }
 
-  return response.status(404).end();
+      return response.status(404).end();
+    });
 });
-app.delete('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find((entry) => entry.id === id);
+app.delete('/api/persons/:id', async (request, response) => {
+  return Person.findOneAndRemove({ _id: request.params.id })
+    .then((deleted) => {
+      if (!!deleted) {
+        console.warn(chalkWarn(`deleted ${request.params.id}`));
+        return response.status(204).end();
+      }
 
-  if (person) {
-    persons = persons.filter((entry) => entry.id !== id);
-    return response.status(204).end();
-  }
+      return response.status(404).end();
+    })
+    .catch((error) => {
+      const idCastError = checkIdCastError(error);
+      if (!!idCastError) {
+        return response.status(400).json({ error: idCastError });
+      }
 
-  return response.status(404).end();
+      console.error(chalkError(error));
+      return response.json(error);
+    });
 });
 
 /**
@@ -131,5 +135,16 @@ app.use((request, response) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`, URL);
 });
+
+function checkIdCastError(error) {
+  if (error.name === 'CastError' && error.kind === 'ObjectId') {
+    const msg =
+      'id must be a string of 12 bytes or a string of 24 hex characters or an integer';
+    console.error(chalkError(msg));
+    return msg;
+  }
+
+  return false;
+}
