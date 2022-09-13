@@ -43,7 +43,7 @@ const enforceJSONContentType = (req, res, next) => {
 };
 
 // https://stackoverflow.com/a/58165719/2029532
-const jsonParseError = (err, req, res, next) => {
+const jsonParseErrorHandler = (err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
     console.warn(chalkWarn(err.message));
     console.warn(chalkWarn(err.body));
@@ -63,7 +63,7 @@ app.use(
   ),
   enforceJSONContentType,
   express.json(),
-  jsonParseError,
+  jsonParseErrorHandler,
   cors(),
 );
 
@@ -100,18 +100,16 @@ app.post('/api/persons', async (req, res, next) => {
     return exists;
   }
 
-  const person = await new Person({
+  new Person({
     name: req.body.name,
     number: `${req.body.number}`,
   })
     .save()
-    .catch((err) => {
-      console.error(err);
-      next(err);
-    });
-
-  console.log(chalkSuccess(`saved ${JSON.stringify(person)}`));
-  return res.status(201).json(person);
+    .then((person) => {
+      console.log(chalkSuccess(`saved ${JSON.stringify(person)}`));
+      return res.status(201).json(person);
+    })
+    .catch((err) => next(err));
 });
 
 /**
