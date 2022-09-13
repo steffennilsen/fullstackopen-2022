@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const morgan = require('morgan');
 const chalk = require('chalk');
-const httpError = require('http-errors');
 const Person = require('./models/person');
 
 const chalkSuccess = chalk.green;
@@ -106,7 +105,10 @@ app.post('/api/persons', async (req, res, next) => {
     number: `${req.body.number}`,
   })
     .save()
-    .catch((err) => next(err));
+    .catch((err) => {
+      console.error(err);
+      next(err);
+    });
 
   console.log(chalkSuccess(`saved ${JSON.stringify(person)}`));
   return res.status(201).json(person);
@@ -146,6 +148,8 @@ app.put('/api/persons/:id', async (req, res, next) => {
   const person = await Person.findByIdAndUpdate(req.params.id, entries, {
     new: true,
     upsert: false,
+    runValidators: true,
+    context: 'query',
   }).catch((err) => next(err));
 
   if (person === null) {
@@ -157,20 +161,23 @@ app.put('/api/persons/:id', async (req, res, next) => {
 });
 
 /**
- * Route end
+ * unknown endpoints
  */
+app.use((req, res) => {
+  console.warn(chalkWarn(`unknownEndpoint`));
+  return res.status(404).send({ error: 'unknown endpoint' });
+});
 
 /**
- * 404 is not an actual error, so lets make it one
- * so the endpointhandler has something to work with
+ * Route end
  */
-app.use((req, res, next) => next(new httpError(404)));
 
 /**
  * Handle malformed id's
  */
 app.use((err, req, res, next) => {
   if (err.name === 'CastError' && err.kind === 'ObjectId') {
+    console.warn(chalkWarn('malformed id'));
     return res.status(400).send({ error: 'malformatted id' });
   }
 
@@ -178,11 +185,15 @@ app.use((err, req, res, next) => {
 });
 
 /**
- * Handle unknown endpoint
+ * Handle validation errors
  */
 app.use((err, req, res, next) => {
-  console.warn(chalkWarn(`unknownEndpoint`));
-  return res.status(404).send({ error: 'unknown endpoint' });
+  if (err.name === 'ValidationError') {
+    console.warn(chalkWarn(err.message));
+    return res.status(400).send({ error: err.message });
+  }
+
+  return next(err);
 });
 
 app.listen(PORT, () => {

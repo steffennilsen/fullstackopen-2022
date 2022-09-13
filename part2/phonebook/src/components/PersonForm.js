@@ -26,7 +26,8 @@ const PersonForm = ({ name, persons, number, addNotification }) => {
         addNotification(`Added ${dbPerson.name}`);
       })
       .catch((error) => {
-        addNotification(error.message, "error");
+        const msg = error.response.data.error || error.message;
+        addNotification(msg, "error");
       });
   };
 
@@ -54,7 +55,8 @@ const PersonForm = ({ name, persons, number, addNotification }) => {
         addNotification(`Updated ${dbPerson.name}`);
       })
       .catch((error) => {
-        addNotification(error.message, "error");
+        const msg = error.response.data.error || error.message;
+        addNotification(msg, "error");
       });
   };
 
