@@ -23,9 +23,7 @@ const mostBlogs = (blogs) => {
     }))
     .map((counter) => ({
       author: counter.author,
-      blogs: (counter.blogs = blogs.filter(
-        (blog) => blog.author === counter.author,
-      ).length),
+      blogs: blogs.filter((blog) => blog.author === counter.author).length,
     }))
     .reduce((a, b) => (a.likes > b.likes ? a : b));
 };
@@ -41,9 +39,9 @@ const mostLikes = (blogs) => {
     }))
     .map((counter) => ({
       author: counter.author,
-      likes: (counter.likes = blogs
+      likes: blogs
         .filter((blog) => blog.author === counter.author)
-        .reduce((a, b) => a + b.likes, 0)),
+        .reduce((a, b) => a + b.likes, 0),
     }))
     .reduce((a, b) => (a.likes > b.likes ? a : b));
 };
