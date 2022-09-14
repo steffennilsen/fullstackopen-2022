@@ -1,4 +1,4 @@
-const _ = require('lodash');
+const countBy = require('lodash.countby');
 
 // eslint-disable-next-line no-unused-vars
 const dummy = (blogs) => 1;
@@ -18,7 +18,7 @@ const mostBlogs = (blogs) => {
     return undefined;
   }
 
-  return Object.entries(_.countBy(blogs, (blog) => blog.author))
+  return Object.entries(countBy(blogs, (blog) => blog.author))
     .map((entry) => ({
       author: entry[0],
       blogs: entry[1],
