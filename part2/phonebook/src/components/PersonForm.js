@@ -1,11 +1,11 @@
-import personService from "../services/personService";
+import personService from '../services/personService';
 
 const PersonForm = ({ name, persons, number, addNotification }) => {
   const addEntry = async (event) => {
     event.preventDefault();
 
     if (!name.get || !number.get) {
-      addNotification("Fill out all fields", "warn");
+      addNotification('Fill out all fields', 'warn');
       return false;
     }
 
@@ -21,19 +21,19 @@ const PersonForm = ({ name, persons, number, addNotification }) => {
       })
       .then((dbPerson) => {
         persons.set([...persons.get, dbPerson]);
-        name.set("");
-        number.set("");
+        name.set('');
+        number.set('');
         addNotification(`Added ${dbPerson.name}`);
       })
       .catch((error) => {
         const msg = error.response.data.error || error.message;
-        addNotification(msg, "error");
+        addNotification(msg, 'error');
       });
   };
 
   const updateEntry = async (person) => {
     const confirm = window.confirm(
-      `${name.get} is already added to phonebook, replace the old number with a new one?`
+      `${name.get} is already added to phonebook, replace the old number with a new one?`,
     );
 
     if (!confirm) {
@@ -50,13 +50,13 @@ const PersonForm = ({ name, persons, number, addNotification }) => {
           ...persons.get.filter((_) => _.id !== person.id),
           dbPerson,
         ]);
-        name.set("");
-        number.set("");
+        name.set('');
+        number.set('');
         addNotification(`Updated ${dbPerson.name}`);
       })
       .catch((error) => {
         const msg = error.response.data.error || error.message;
-        addNotification(msg, "error");
+        addNotification(msg, 'error');
       });
   };
 

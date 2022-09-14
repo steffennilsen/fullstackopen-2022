@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import PersonForm from "./components/PersonForm";
-import Persons from "./components/Persons";
-import Filter from "./components/Filter";
-import personService from "./services/personService";
-import Notification from "./components/Notification";
+import { useEffect, useState } from 'react';
+import PersonForm from './components/PersonForm';
+import Persons from './components/Persons';
+import Filter from './components/Filter';
+import personService from './services/personService';
+import Notification from './components/Notification';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
-  const [newName, setNewName] = useState("");
-  const [newNumber, setNewNumber] = useState("");
-  const [filter, setFilter] = useState("");
+  const [newName, setNewName] = useState('');
+  const [newNumber, setNewNumber] = useState('');
+  const [filter, setFilter] = useState('');
   const [filterPersons, setFilterPersons] = useState([]);
   const [notification, setNotification] = useState(null);
 
@@ -22,13 +22,13 @@ const App = () => {
       filter.length === 0
         ? persons
         : persons.filter((person) =>
-            person.name.toLowerCase().includes(filter.toLowerCase())
-          )
+          person.name.toLowerCase().includes(filter.toLowerCase()),
+        ),
     );
   }, [filter, persons]);
 
   /** No message queue stack pop etc */
-  const addNotification = (content, type = "success", duration = 3000) => {
+  const addNotification = (content, type = 'success', duration = 3000) => {
     setNotification({ content, type });
     setTimeout(() => setNotification(null), duration);
   };

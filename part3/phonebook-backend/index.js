@@ -8,7 +8,6 @@ const chalk = require('chalk');
 const Person = require('./models/person');
 
 const chalkSuccess = chalk.green;
-const chalkInfo = chalk.bgBlue.white;
 const chalkWarn = chalk.bgYellow.black;
 const chalkError = chalk.bold.red;
 
@@ -58,7 +57,7 @@ const jsonParseErrorHandler = (err, req, res, next) => {
 
 app.use(
   express.static('build'),
-  morgan.token('body', (req, res) => JSON.stringify(req.body))(
+  morgan.token('body', (req) => JSON.stringify(req.body))(
     ':method :url :status :res[content-length] - :response-time ms :body',
   ),
   enforceJSONContentType,
@@ -91,12 +90,12 @@ app.get('/api/persons', async (req, res, next) => {
 
 app.post('/api/persons', async (req, res, next) => {
   const invalid = invalidPersonEntries(req.body, res);
-  if (!!invalid) {
+  if (invalid) {
     return invalid;
   }
 
   const exists = await checkIfPersonExists(req.body.name, res, next);
-  if (!!exists) {
+  if (exists) {
     return exists;
   }
 
@@ -138,7 +137,7 @@ app.delete('/api/persons/:id', async (req, res, next) => {
 
 app.put('/api/persons/:id', async (req, res, next) => {
   const invalid = invalidPersonEntries(req.body, res);
-  if (!!invalid) {
+  if (invalid) {
     return invalid;
   }
 
@@ -162,7 +161,7 @@ app.put('/api/persons/:id', async (req, res, next) => {
  * unknown endpoints
  */
 app.use((req, res) => {
-  console.warn(chalkWarn(`unknownEndpoint`));
+  console.warn(chalkWarn('unknownEndpoint'));
   return res.status(404).send({ error: 'unknown endpoint' });
 });
 
@@ -226,7 +225,7 @@ async function checkIfPersonExists(name, res, next) {
 function invalidPersonEntries(person, res) {
   for (const key of ['name', 'number']) {
     if (person[key] === undefined || person[key] === null) {
-      console.warn(chalkWarn(`invalid or missing entries`));
+      console.warn(chalkWarn('invalid or missing entries'));
       return res.status(400).json({ error: 'invalid or missing entries' });
     }
   }

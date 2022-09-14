@@ -1,5 +1,5 @@
-import Person from "./Person";
-import personService from "../services/personService";
+import Person from './Person';
+import personService from '../services/personService';
 
 const Persons = ({ persons, setPersons, addNotification }) => {
   const handleDeletePerson = (person) => {
@@ -10,7 +10,7 @@ const Persons = ({ persons, setPersons, addNotification }) => {
         .remove(person.id)
         .then(() => {
           setPersons(persons.filter((_person) => _person.id !== person.id));
-          addNotification(`Removed ${person.name}`, "warn");
+          addNotification(`Removed ${person.name}`, 'warn');
         })
         .catch((error) => {
           if (error.response.status === 404) {
@@ -18,7 +18,7 @@ const Persons = ({ persons, setPersons, addNotification }) => {
             setPersons(persons.filter((_person) => _person.id !== person.id));
             addNotification(
               `Information of ${person.name} has already been removed from server`,
-              "error"
+              'error',
             );
           }
         });
