@@ -3,6 +3,7 @@ const {
   totalLikes,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
 } = require('../utils/list_helper');
 
 const listWithOneBlog = [
@@ -115,5 +116,21 @@ describe('mostBlogs', () => {
     expect(mostBlogs(blogs)).toEqual({
       author: 'Robert C. Martin',
       blogs: 3,
+    }));
+});
+
+describe('mostLikes', () => {
+  it('should handle empty array', () => expect(mostLikes([])).toBeUndefined());
+
+  it('should handle single entry', () =>
+    expect(mostLikes(listWithOneBlog)).toEqual({
+      author: 'Edsger W. Dijkstra',
+      likes: 5,
+    }));
+
+  it('should handle multiple entry', () =>
+    expect(mostLikes(blogs)).toEqual({
+      author: 'Edsger W. Dijkstra',
+      likes: 17,
     }));
 });

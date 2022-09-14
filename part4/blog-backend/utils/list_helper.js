@@ -1,5 +1,3 @@
-const countBy = require('lodash.countby');
-
 // eslint-disable-next-line no-unused-vars
 const dummy = (blogs) => 1;
 const totalLikes = (blogs) => blogs.reduce((a, b) => a + b.likes, 0);
@@ -18,12 +16,36 @@ const mostBlogs = (blogs) => {
     return undefined;
   }
 
-  return Object.entries(countBy(blogs, (blog) => blog.author))
-    .map((entry) => ({
-      author: entry[0],
-      blogs: entry[1],
+  return [...new Set(blogs.map((blog) => blog.author))]
+    .map((author) => ({
+      author,
+      likes: 0,
     }))
-    .reduce((a, b) => (a.blogs > b.blogs ? a : b), []);
+    .map((counter) => ({
+      author: counter.author,
+      blogs: (counter.blogs = blogs.filter(
+        (blog) => blog.author === counter.author,
+      ).length),
+    }))
+    .reduce((a, b) => (a.likes > b.likes ? a : b));
+};
+const mostLikes = (blogs) => {
+  if (blogs.length === 0) {
+    return undefined;
+  }
+
+  return [...new Set(blogs.map((blog) => blog.author))]
+    .map((author) => ({
+      author,
+      likes: 0,
+    }))
+    .map((counter) => ({
+      author: counter.author,
+      likes: (counter.likes = blogs
+        .filter((blog) => blog.author === counter.author)
+        .reduce((a, b) => a + b.likes, 0)),
+    }))
+    .reduce((a, b) => (a.likes > b.likes ? a : b));
 };
 
 module.exports = {
@@ -31,4 +53,5 @@ module.exports = {
   totalLikes,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
 };
