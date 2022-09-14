@@ -4,9 +4,10 @@
     "commonjs": true,
     "es2021": true,
     "node": true,
-    "es6": true
+    "es6": true,
+    "jest": true
   },
-  "extends": "prettier",
+  "extends": ["eslint:recommended", "prettier"],
   "overrides": [],
   "parserOptions": {
     "ecmaVersion": "latest"
@@ -22,7 +23,7 @@
     "object-curly-spacing": ["error", "always"],
     "arrow-spacing": ["error", { "before": true, "after": true }],
     "no-console": "error",
-    "multiline-ternary": ["error", "always"]
+    "multiline-ternary": ["error", "always-multiline"]
   },
   "root": true
 }

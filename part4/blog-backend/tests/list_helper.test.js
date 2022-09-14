@@ -1,4 +1,4 @@
-const { dummy, totalLikes } = require('../utils/list_helper');
+const { dummy, totalLikes, favoriteBlog } = require('../utils/list_helper');
 
 const listWithOneBlog = [
   {
@@ -62,22 +62,37 @@ const blogs = [
   },
 ];
 
-describe('list_helper', () => {
-  describe('dummy', () => {
-    it('should return one', () => {
-      const blogs = [];
-      const result = dummy(blogs);
-      expect(result).toBe(1);
-    });
+describe('dummy', () => {
+  it('should return one', () => {
+    const blogs = [];
+    const result = dummy(blogs);
+    expect(result).toBe(1);
   });
+});
 
-  describe('totalLikes', () => {
-    it('should handle empty array', () => expect(totalLikes([])).toBe(0));
-    it('should count single entry', () =>
-      expect(totalLikes(listWithOneBlog)).toBe(5));
-    it('should total multiple entries 1', () =>
-      expect(totalLikes([{ likes: 3 }, { likes: 7 }])).toBe(10));
-    it('should total multiple entries 2', () =>
-      expect(totalLikes(blogs)).toBe(36));
-  });
+describe('totalLikes', () => {
+  it('should handle empty array', () => expect(totalLikes([])).toBe(0));
+  it('should count single entry', () =>
+    expect(totalLikes(listWithOneBlog)).toBe(5));
+  it('should total multiple entries 1', () =>
+    expect(totalLikes([{ likes: 3 }, { likes: 7 }])).toBe(10));
+  it('should total multiple entries 2', () =>
+    expect(totalLikes(blogs)).toBe(36));
+});
+
+describe('favoriteBlog', () => {
+  it('should handle empty array', () =>
+    expect(favoriteBlog([])).toBeUndefined());
+  it('should handle single entry', () =>
+    expect(favoriteBlog(listWithOneBlog)).toEqual({
+      title: 'Go To Statement Considered Harmful',
+      author: 'Edsger W. Dijkstra',
+      likes: 5,
+    }));
+  it('should handle multiple entries', () =>
+    expect(favoriteBlog(blogs)).toEqual({
+      title: 'Canonical string reduction',
+      author: 'Edsger W. Dijkstra',
+      likes: 12,
+    }));
 });
