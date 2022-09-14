@@ -1,4 +1,9 @@
-const { dummy, totalLikes, favoriteBlog } = require('../utils/list_helper');
+const {
+  dummy,
+  totalLikes,
+  favoriteBlog,
+  mostBlogs,
+} = require('../utils/list_helper');
 
 const listWithOneBlog = [
   {
@@ -94,5 +99,21 @@ describe('favoriteBlog', () => {
       title: 'Canonical string reduction',
       author: 'Edsger W. Dijkstra',
       likes: 12,
+    }));
+});
+
+describe('mostBlogs', () => {
+  it('should handle empty array', () => expect(mostBlogs([])).toBeUndefined());
+
+  it('should handle single entry', () =>
+    expect(mostBlogs(listWithOneBlog)).toEqual({
+      author: 'Edsger W. Dijkstra',
+      blogs: 1,
+    }));
+
+  it('should handle multiple entry', () =>
+    expect(mostBlogs(blogs)).toEqual({
+      author: 'Robert C. Martin',
+      blogs: 3,
     }));
 });
