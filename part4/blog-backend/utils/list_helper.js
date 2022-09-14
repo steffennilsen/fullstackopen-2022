@@ -32,18 +32,20 @@ const mostLikes = (blogs) => {
     return undefined;
   }
 
-  return [...new Set(blogs.map((blog) => blog.author))]
-    .map((author) => ({
-      author,
-      likes: 0,
-    }))
-    .map((counter) => ({
-      author: counter.author,
-      likes: blogs
-        .filter((blog) => blog.author === counter.author)
-        .reduce((a, b) => a + b.likes, 0),
-    }))
-    .reduce((a, b) => (a.likes > b.likes ? a : b));
+  return (
+    [...new Set(blogs.map((blog) => blog.author))]
+      // .map((author) => ({
+      //   author,
+      //   likes: 0,
+      // }))
+      .map((counter) => ({
+        author: counter.author,
+        likes: blogs
+          .filter((blog) => blog.author === counter.author)
+          .reduce((a, b) => a + b.likes, 0),
+      }))
+      .reduce((a, b) => (a.likes > b.likes ? a : b))
+  );
 };
 
 module.exports = {
