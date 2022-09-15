@@ -4,6 +4,7 @@ const {
   favoriteBlog,
   mostBlogs,
   mostLikes,
+  emptyBlogListHandler,
 } = require('../utils/list_helper');
 
 const listWithOneBlog = [
@@ -84,6 +85,17 @@ describe('totalLikes', () => {
     expect(totalLikes([{ likes: 3 }, { likes: 7 }])).toBe(10));
   it('should total multiple entries 2', () =>
     expect(totalLikes(blogs)).toBe(36));
+});
+
+describe('emptyBlogListHandler', () => {
+  it('should handle empty', () =>
+    expect(emptyBlogListHandler([], () => {})).toBeUndefined());
+  it('should handle single entry', () =>
+    expect(emptyBlogListHandler(listWithOneBlog, (blog) => blog)).toBe(
+      listWithOneBlog,
+    ));
+  it('should handle multiple entry', () =>
+    expect(emptyBlogListHandler(blogs, (blog) => blog)).toBe(blogs));
 });
 
 describe('favoriteBlog', () => {
