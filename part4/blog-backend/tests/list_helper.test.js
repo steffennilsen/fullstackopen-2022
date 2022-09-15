@@ -5,7 +5,7 @@ const {
   mostBlogs,
   mostLikes,
   emptyBlogListHandler,
-} = require('../utils/list_helper');
+} = require('#@/utils/list_helper');
 
 const listWithOneBlog = [
   {
