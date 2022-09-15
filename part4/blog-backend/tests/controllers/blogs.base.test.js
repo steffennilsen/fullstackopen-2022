@@ -56,6 +56,7 @@ describe(`POST ${PATH}`, () => {
       .send(payload)
       .expect(201)
       .expect('Content-Type', /application\/json/);
+
     const body = res.body;
     const { title, author, url, likes } = body;
     const resBlog = { title, author, url, likes };
@@ -76,5 +77,16 @@ describe(`POST ${PATH}`, () => {
     await api.post(PATH).send({ title: 'missing entries' }).expect(400);
     const blogCount = await Blog.countDocuments({});
     expect(blogCount).toBe(blogsMultiple.length);
+  });
+
+  it('should set likes to 0 if missing', async () => {
+    const res = await api
+      .post(PATH)
+      .send({ title: 'packetstorm', author: 'me', url: '127.0.01' })
+      .expect(201);
+
+    const { likes } = res.body;
+    expect(likes).toBeDefined();
+    expect(likes).toEqual(0);
   });
 });
