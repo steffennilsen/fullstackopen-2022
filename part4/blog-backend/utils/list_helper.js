@@ -1,3 +1,5 @@
+const { NODE_ENV } = require('./config');
+
 // eslint-disable-next-line no-unused-vars
 const dummy = (blogs) => 1;
 
@@ -45,7 +47,7 @@ module.exports = {
   mostLikes,
 };
 
-if (process.env.NODE_ENV === 'test') {
+if (NODE_ENV === 'test') {
   module.exports = {
     ...module.exports,
     ...{
