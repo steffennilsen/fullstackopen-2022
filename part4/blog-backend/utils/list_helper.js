@@ -1,22 +1,19 @@
 // eslint-disable-next-line no-unused-vars
 const dummy = (blogs) => 1;
+
 const totalLikes = (blogs) => blogs.reduce((a, b) => a + b.likes, 0);
+
 const emptyBlogListHandler = (blogs, callback) =>
   blogs.length === 0 ? undefined : callback(blogs);
 
 const favoriteBlog = (blogs) =>
-  emptyBlogListHandler(blogs, (blogs) => {
-    const blog = blogs.reduce((a, b) => (a.likes > b.likes ? a : b), blogs[0]);
-    const { title, author, likes } = blog;
-
-    return blog
-      ? {
-        title,
-        author,
-        likes,
-      }
-      : blog;
-  });
+  emptyBlogListHandler(
+    blogs,
+    (blogs) =>
+      [blogs.reduce((a, b) => (a.likes > b.likes ? a : b))].map(
+        ({ title, author, likes }) => ({ title, author, likes }),
+      )[0],
+  );
 
 const mostBlogs = (blogs) =>
   emptyBlogListHandler(blogs, (blogs) =>
