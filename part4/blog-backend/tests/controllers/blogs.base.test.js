@@ -34,6 +34,12 @@ describe(`GET ${PATH}`, () => {
     const blogs = (await api.get(PATH)).body;
     expect(blogs.length).toBe(expected);
   });
+
+  it('should transform _id to id', async () => {
+    const blog = (await api.get(PATH)).body[0];
+    expect(blog.id).toBeDefined();
+    expect(blog._id).not.toBeDefined();
+  });
 });
 
 describe(`POST ${PATH}`, () => {
