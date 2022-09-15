@@ -6,7 +6,7 @@ const {
   mostLikes,
   emptyBlogListHandler,
 } = require('#@/utils/list_helper');
-const { blogsSingular, blogsMultiple } = require('#@/tests/blogs.helper');
+const { blogsSingle, blogsMultiple } = require('#@/tests/blogs.helper');
 
 describe('dummy', () => {
   it('should return one', () => {
@@ -19,7 +19,7 @@ describe('dummy', () => {
 describe('totalLikes', () => {
   it('should handle empty array', () => expect(totalLikes([])).toBe(0));
   it('should count single entry', () =>
-    expect(totalLikes(blogsSingular)).toBe(5));
+    expect(totalLikes(blogsSingle)).toBe(5));
   it('should total multiple entries 1', () =>
     expect(totalLikes([{ likes: 3 }, { likes: 7 }])).toBe(10));
   it('should total multiple entries 2', () =>
@@ -30,8 +30,8 @@ describe('emptyBlogListHandler', () => {
   it('should handle empty', () =>
     expect(emptyBlogListHandler([], () => {})).toBeUndefined());
   it('should handle single entry', () =>
-    expect(emptyBlogListHandler(blogsSingular, (blog) => blog)).toBe(
-      blogsSingular,
+    expect(emptyBlogListHandler(blogsSingle, (blog) => blog)).toBe(
+      blogsSingle,
     ));
   it('should handle multiple entry', () =>
     expect(emptyBlogListHandler(blogsMultiple, (blog) => blog)).toBe(
@@ -43,7 +43,7 @@ describe('favoriteBlog', () => {
   it('should handle empty array', () =>
     expect(favoriteBlog([])).toBeUndefined());
   it('should handle single entry', () =>
-    expect(favoriteBlog(blogsSingular)).toEqual({
+    expect(favoriteBlog(blogsSingle)).toEqual({
       title: 'Go To Statement Considered Harmful',
       author: 'Edsger W. Dijkstra',
       likes: 5,
@@ -60,7 +60,7 @@ describe('mostBlogs', () => {
   it('should handle empty array', () => expect(mostBlogs([])).toBeUndefined());
 
   it('should handle single entry', () =>
-    expect(mostBlogs(blogsSingular)).toEqual({
+    expect(mostBlogs(blogsSingle)).toEqual({
       author: 'Edsger W. Dijkstra',
       blogs: 1,
     }));
@@ -76,7 +76,7 @@ describe('mostLikes', () => {
   it('should handle empty array', () => expect(mostLikes([])).toBeUndefined());
 
   it('should handle single entry', () =>
-    expect(mostLikes(blogsSingular)).toEqual({
+    expect(mostLikes(blogsSingle)).toEqual({
       author: 'Edsger W. Dijkstra',
       likes: 5,
     }));

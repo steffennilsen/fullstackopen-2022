@@ -3,7 +3,11 @@ const supertest = require('supertest');
 const Blog = require('#@/models/blog');
 const app = require('#@/app');
 const api = supertest(app);
-const { blogsMultiple } = require('#@/tests/blogs.helper');
+const {
+  payloadBlog,
+  blogsMultiple,
+  postPayloadExpectCount,
+} = require('#@/tests/blogs.helper');
 
 const PATH = '/api/blogs';
 
@@ -44,48 +48,67 @@ describe(`GET ${PATH}`, () => {
 
 describe(`POST ${PATH}`, () => {
   it('should add a valid blog', async () => {
-    const payload = {
-      title: 'packetstorm',
-      author: 'me',
-      url: '10.0.0.1',
-      likes: 255,
-    };
-
     const res = await api
       .post(PATH)
-      .send(payload)
+      .send(payloadBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
     const body = res.body;
     const { title, author, url, likes } = body;
-    const resBlog = { title, author, url, likes };
-    expect(resBlog).toEqual(payload);
+    const payload = { title, author, url, likes };
+    expect(payload).toEqual(payloadBlog);
 
     const blogs = await Blog.find({});
     expect(blogs.length).toBe(blogsMultiple.length + 1);
-    expect(blogs.map((_) => _.title)).toContain(payload.title);
+    expect(blogs.map((_) => _.title)).toContain(payloadBlog.title);
   });
 
   it('should not add an empty blog', async () => {
-    await api.post(PATH).send({}).expect(400);
-    const blogCount = await Blog.countDocuments({});
-    expect(blogCount).toBe(blogsMultiple.length);
+    const payload = {};
+    await postPayloadExpectCount({
+      path: PATH,
+      payload,
+      expected: blogsMultiple.length,
+      model: Blog,
+      api,
+      status: 400,
+    });
   });
 
-  it('should not add an invalid blog', async () => {
-    await api.post(PATH).send({ title: 'missing entries' }).expect(400);
-    const blogCount = await Blog.countDocuments({});
-    expect(blogCount).toBe(blogsMultiple.length);
+  it('should not add if missing title', async () => {
+    const { author, url, likes } = payloadBlog;
+    const payload = { author, url, likes };
+
+    await postPayloadExpectCount({
+      path: PATH,
+      payload,
+      expected: blogsMultiple.length,
+      model: Blog,
+      api,
+      status: 400,
+    });
+  });
+
+  it('should not add if missing url', async () => {
+    const { title, author, likes } = payloadBlog;
+    const payload = { title, author, likes };
+    await postPayloadExpectCount({
+      path: PATH,
+      payload,
+      expected: blogsMultiple.length,
+      model: Blog,
+      api,
+      status: 400,
+    });
   });
 
   it('should set likes to 0 if missing', async () => {
-    const res = await api
-      .post(PATH)
-      .send({ title: 'packetstorm', author: 'me', url: '127.0.01' })
-      .expect(201);
-
+    const { title, author, url } = payloadBlog;
+    const payload = { title, author, url };
+    const res = await api.post(PATH).send(payload).expect(201);
     const { likes } = res.body;
+
     expect(likes).toBeDefined();
     expect(likes).toEqual(0);
   });

@@ -1,4 +1,11 @@
-const blogsSingular = [
+const payloadBlog = {
+  title: 'packetstorm',
+  author: 'me',
+  url: '127.0.01',
+  likes: 255,
+};
+
+const blogsSingle = [
   {
     _id: '5a422aa71b54a676234d17f8',
     title: 'Go To Statement Considered Harmful',
@@ -60,7 +67,17 @@ const blogsMultiple = [
   },
 ];
 
+const postPayloadExpectCount = async (options) => {
+  const { path, payload, expected, model, api, status } = options;
+  const res = await api.post(path).send(payload).expect(status);
+  const blogCount = await model.countDocuments({});
+  expect(blogCount).toBe(expected);
+  return res.body;
+};
+
 module.exports = {
-  blogsSingular,
+  payloadBlog,
+  blogsSingle,
   blogsMultiple,
+  postPayloadExpectCount,
 };
