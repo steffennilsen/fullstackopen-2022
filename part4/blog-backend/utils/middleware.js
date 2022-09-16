@@ -1,5 +1,6 @@
 const morgan = require('morgan');
 const logger = require('#@/utils/logger');
+const { NODE_ENV } = require('./config');
 
 const enforceJSONContentType = (req, res, next) => {
   if (
@@ -52,3 +53,14 @@ module.exports = {
   unknownEndpoint,
   errorHandler,
 };
+
+if (NODE_ENV === 'test') {
+  const dummyMiddleware = (err, req, res, next) => next();
+
+  module.exports = {
+    ...module.exports,
+    ...{
+      requestLogger: dummyMiddleware,
+    },
+  };
+}
