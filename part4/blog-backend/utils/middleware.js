@@ -10,6 +10,20 @@ const enforceJSONContentType = (req, res, next) => {
   return next();
 };
 
+const enforcePasswordValidation = (req, res, next) => {
+  const { password } = req.body;
+
+  if (!password) {
+    return res.status(400).json({ error: 'missing password' });
+  }
+
+  if (`${password}`.length < 3) {
+    return res.status(400).json({ error: 'too short password' });
+  }
+
+  return next();
+};
+
 /**
  * https://stackoverflow.com/a/58165719/2029532
  */
@@ -43,21 +57,15 @@ const errorHandler = (err, req, res, next) => {
   return next(err);
 };
 
+const isTestEnv = NODE_ENV === 'test';
+const dummyMiddleware = (err, req, res, next) => next();
+
 module.exports = {
   enforceJSONContentType,
+  enforcePasswordValidation,
   jsonParseErrorHandler,
-  requestLogger,
   unknownEndpoint,
   errorHandler,
+  requestLogger,
+  ...(isTestEnv && { requestLogger: dummyMiddleware }),
 };
-
-if (NODE_ENV === 'test') {
-  const dummyMiddleware = (err, req, res, next) => next();
-
-  module.exports = {
-    ...module.exports,
-    ...{
-      requestLogger: dummyMiddleware,
-    },
-  };
-}
