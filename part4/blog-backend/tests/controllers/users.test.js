@@ -39,20 +39,20 @@ describe(`GET ${PATH}`, () => {
 });
 
 describe(`POST ${PATH}`, () => {
-  it('should succeed with creating user with valid unique name', async () => {
+  it('should succeed with valid entries', async () => {
     await db.clear();
     await expectCount(0);
     await api.post(PATH).send(userEntries[0]).expect(201);
     await expectCount(1);
   });
 
-  it('should reject user with non unique name', async () => {
+  it('should reject non unique name', async () => {
     await expectCount(userEntries.length);
     await api.post(PATH).send(userEntries[0]).expect(400);
     await expectCount(userEntries.length);
   });
 
-  it('should reject user with missing name', async () => {
+  it('should reject missing name', async () => {
     await expectCount(userEntries.length);
     const { password } = userEntries[0];
     const entries = { password };
@@ -60,10 +60,26 @@ describe(`POST ${PATH}`, () => {
     await expectCount(userEntries.length);
   });
 
-  it('should reject user with missing password', async () => {
+  it('should reject missing password', async () => {
     await expectCount(userEntries.length);
-    const { user } = userEntries[0];
-    const entries = { user };
+    const { username } = userEntries[0];
+    const entries = { username };
+    await api.post(PATH).send(entries).expect(400);
+    await expectCount(userEntries.length);
+  });
+
+  it('should reject name.length < 3', async () => {
+    await expectCount(userEntries.length);
+    const { password } = userEntries[0];
+    const entries = { username: 'to', password };
+    await api.post(PATH).send(entries).expect(400);
+    await expectCount(userEntries.length);
+  });
+
+  it('should reject user with password.length < 3', async () => {
+    await expectCount(userEntries.length);
+    const { username } = userEntries[0];
+    const entries = { username, password: 12 };
     await api.post(PATH).send(entries).expect(400);
     await expectCount(userEntries.length);
   });

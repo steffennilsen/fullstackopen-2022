@@ -10,8 +10,11 @@ usersRouter.get('/', async (req, res) => {
 usersRouter.post('/', enforceJSONContentType, async (res, req) => {
   const { username, name, password } = res.body;
   if (!password) return req.status(400).json({ error: 'missing password' });
+  const parsedPassword = `${password}`;
+  if (parsedPassword.length < 3)
+    return req.status(400).json({ error: 'too short password' });
 
-  const passwordHash = await bcrypt.hash(password, 10);
+  const passwordHash = await bcrypt.hash(parsedPassword, 10);
   const user = await new User({
     username,
     name,
