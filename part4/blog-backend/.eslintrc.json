@@ -7,10 +7,24 @@
     "es6": true,
     "jest": true
   },
-  "extends": ["eslint:recommended", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:node/recommended",
+    "prettier"
+  ],
   "overrides": [],
   "parserOptions": {
-    "ecmaVersion": "latest"
+    "ecmaVersion": 2022
+  },
+  "settings": {
+    "import/resolver": {
+      "alias": {
+        "map": [["#@", "./"]],
+        "extensions": [".js"]
+      }
+    }
   },
   "rules": {
     "indent": ["error", 2, { "SwitchCase": 1 }],

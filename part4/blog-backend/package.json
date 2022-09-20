@@ -24,9 +24,6 @@
     "prettier": "^2.7.1",
     "supertest": "^6.2.4"
   },
-  "imports": {
-    "#@/*": "./*.js"
-  },
   "dependencies": {
     "bcrypt": "^5.0.1",
     "chalk": "4.1.2",
@@ -40,5 +37,8 @@
     "mongoose": "^6.6.0",
     "mongoose-unique-validator": "^3.1.0",
     "morgan": "^1.10.0"
+  },
+  "imports": {
+    "#@/*": "./*.js"
   }
 }
