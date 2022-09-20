@@ -1,3 +1,6 @@
+const { NODE_ENV } = require('#@/utils/config');
+const { connect } = require('#@/utils/mongoose/proddb');
+
 const toJSON = {
   transform: (document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
@@ -6,4 +9,8 @@ const toJSON = {
   },
 };
 
-module.exports = { toJSON };
+module.exports = {
+  toJSON,
+  connect,
+  ...(NODE_ENV === 'test' && require('#@/utils/mongoose/testdb')),
+};
