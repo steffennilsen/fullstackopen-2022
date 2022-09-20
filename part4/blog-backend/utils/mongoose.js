@@ -1,5 +1,21 @@
-const { NODE_ENV } = require('#@/utils/config');
-const { connect } = require('#@/utils/mongoose/proddb');
+const mongoose = require('mongoose');
+const { MONGODB_URI, NODE_ENV } = require('#@/utils/config');
+const logger = require('#@/utils/logger');
+
+const globalConnect = async () => {
+  try {
+    await mongoose.connect(MONGODB_URI);
+    logger.success('connected to MongoDB');
+  } catch (err) {
+    logger.error('error connecting to MongoDB');
+    throw new Error(err);
+  }
+};
+
+const globalDisconnect = async () => {
+  logger.warn('closing mongodb connection');
+  await mongoose.connection.close();
+};
 
 const toJSON = {
   transform: (document, returnedObject) => {
@@ -9,8 +25,10 @@ const toJSON = {
   },
 };
 
+const isTestEnv = NODE_ENV === 'test';
 module.exports = {
   toJSON,
-  connect,
-  ...(NODE_ENV === 'test' && require('#@/utils/mongoose/testdb')),
+  globalConnect: !isTestEnv ? globalConnect : () => {},
+  globalDisconnect: !isTestEnv ? globalDisconnect : () => {},
+  ...(isTestEnv && require('./testdb')),
 };

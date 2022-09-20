@@ -1,16 +1,21 @@
-const mongoose = require('mongoose');
-const supertest = require('supertest');
-const Blog = require('#@/models/blog');
 const app = require('#@/app');
+const supertest = require('supertest');
 const api = supertest(app);
+
 const {
   payloadBlog,
   blogsMultiple,
   expectCount,
 } = require('#@/tests/blogs.helper');
+const Blog = require('#@/models/blog');
+const db = require('#@/utils/mongoose');
 
 const PATH = '/api/blogs';
 let blogIds = [];
+
+beforeAll(async () => {
+  await db.connect();
+});
 
 beforeEach(async () => {
   await Blog.deleteMany({});
@@ -23,7 +28,7 @@ afterEach(() => {
 });
 
 afterAll(() => {
-  mongoose.connection.close();
+  db.disconnect();
 });
 
 describe(`GET ${PATH}`, () => {

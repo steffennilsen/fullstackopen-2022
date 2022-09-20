@@ -12,7 +12,7 @@ const connect = async () => {
   });
 };
 
-const close = async () => {
+const disconnect = async () => {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
   await mongod.stop();
@@ -28,4 +28,4 @@ const clear = async () => {
   }
 };
 
-module.exports = { connect, close, clear };
+module.exports = { connect, disconnect, clear };
