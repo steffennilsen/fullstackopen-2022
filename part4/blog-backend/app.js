@@ -14,6 +14,7 @@ mongoose
   .then(() => logger.success('connected to MongoDB'))
   .catch((error) => {
     logger.error('error connecting to MongoDB:', error.message);
+    // eslint-disable-next-line no-process-exit
     process.exit(1);
   });
 

@@ -38,7 +38,18 @@
     "arrow-spacing": ["error", { "before": true, "after": true }],
     "no-console": "error",
     "multiline-ternary": ["error", "always-multiline"],
-    "no-extra-boolean-cast": "off"
+    "no-extra-boolean-cast": "off",
+    "node/no-process-env": ["error"],
+    "import/no-unresolved": ["error", { "commonjs": true }],
+    "import/no-extraneous-dependencies": "error",
+    "node/no-missing-require": "off",
+    "node/no-extraneous-import": "off",
+    "node/no-unpublished-require": [
+      "error",
+      {
+        "allowModules": ["supertest"]
+      }
+    ]
   },
   "root": true
 }
