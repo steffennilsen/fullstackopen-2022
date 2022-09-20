@@ -3,13 +3,14 @@ require('dotenv').config();
 
 const NODE_ENV = process.env.NODE_ENV;
 const PORT = process.env.PORT || 3003;
-const MONGODB_URI =
-  process.env.NODE_ENV === 'test'
-    ? process.env.TEST_MONGODB_URI
-    : process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 module.exports = {
-  NODE_ENV,
   MONGODB_URI,
+  NODE_ENV,
   PORT,
+  ...(NODE_ENV === 'test' && {
+    MONGODB_URI: process.env.TEST_MONGODB_URI,
+    PORT: process.env.TEST_PORT,
+  }),
 };

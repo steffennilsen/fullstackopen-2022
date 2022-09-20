@@ -1,10 +1,21 @@
-const mongoose = require('mongoose');
 const express = require('express');
 require('express-async-errors');
+
+/**
+ * Some of these require statments have side effects depending on load order
+ */
+
+const mongoose = require('mongoose');
 const cors = require('cors');
 const config = require('#@/utils/config');
 const logger = require('#@/utils/logger');
-const middleware = require('#@/utils/middleware');
+const {
+  enforceJSONContentType,
+  jsonParseErrorHandler,
+  requestLogger,
+  unknownEndpoint,
+  errorHandler,
+} = require('#@/utils/middleware');
 const blogsRouter = require('#@/controllers/blogs');
 
 const app = express();
@@ -21,12 +32,12 @@ mongoose
 app
   .use(
     cors(),
-    middleware.enforceJSONContentType,
+    enforceJSONContentType,
     express.json(),
-    middleware.jsonParseErrorHandler,
-    middleware.requestLogger,
+    jsonParseErrorHandler,
+    requestLogger,
   )
   .use('/api/blogs', blogsRouter)
-  .use(middleware.unknownEndpoint, middleware.errorHandler);
+  .use(unknownEndpoint, errorHandler);
 
 module.exports = app;
