@@ -3,10 +3,7 @@ const logger = require('#@/utils/logger');
 const { NODE_ENV } = require('./config');
 
 const enforceJSONContentType = (req, res, next) => {
-  if (
-    ['POST', 'PUT', 'PATCH'].find((method) => method === req.method) &&
-    req.get('Content-Type') !== 'application/json'
-  ) {
+  if (req.get('Content-Type') !== 'application/json') {
     return res.sendStatus(415);
   }
 
@@ -26,8 +23,8 @@ const jsonParseErrorHandler = (err, req, res, next) => {
   return next();
 };
 
-const requestLogger = morgan.token('body', (req) => JSON.stringify(req.body))(
-  ':method :url :status :res[content-length] - :response-time ms :body',
+const requestLogger = morgan(
+  ':method :url :status :res[content-length] - :response-time ms',
 );
 
 const unknownEndpoint = (req, res) => {

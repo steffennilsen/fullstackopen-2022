@@ -27,8 +27,8 @@ afterEach(() => {
   blogIds = [];
 });
 
-afterAll(() => {
-  db.disconnect();
+afterAll(async () => {
+  await db.disconnect();
 });
 
 describe(`GET ${PATH}`, () => {

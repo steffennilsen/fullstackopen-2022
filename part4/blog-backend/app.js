@@ -7,7 +7,6 @@ const ON_DEATH = require('death')({ uncaughtException: true });
  */
 
 const {
-  enforceJSONContentType,
   jsonParseErrorHandler,
   requestLogger,
   unknownEndpoint,
@@ -17,6 +16,7 @@ const { onDeath } = require('#@/utils/death');
 const blogsRouter = require('#@/controllers/blogs');
 const cors = require('cors');
 const mongoose = require('#@/utils/mongoose');
+const usersRouter = require('#@/controllers/users');
 
 ON_DEATH(onDeath);
 
@@ -24,14 +24,9 @@ mongoose.globalConnect();
 
 const app = express();
 app
-  .use(
-    cors(),
-    enforceJSONContentType,
-    express.json(),
-    jsonParseErrorHandler,
-    requestLogger,
-  )
+  .use(cors(), express.json(), jsonParseErrorHandler, requestLogger)
   .use('/api/blogs', blogsRouter)
+  .use('/api/users', usersRouter)
   .use(unknownEndpoint, errorHandler);
 
 module.exports = app;
