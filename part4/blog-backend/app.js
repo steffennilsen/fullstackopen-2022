@@ -15,6 +15,7 @@ const {
 const { onDeath } = require('#@/utils/death');
 const blogsRouter = require('#@/controllers/blogs');
 const cors = require('cors');
+const loginRouter = require('#@/controllers/login');
 const mongoose = require('#@/utils/mongoose');
 const usersRouter = require('#@/controllers/users');
 
@@ -26,6 +27,7 @@ const app = express();
 app
   .use(cors(), express.json(), jsonParseErrorHandler, requestLogger)
   .use('/api/blogs', blogsRouter)
+  .use('/api/login', loginRouter)
   .use('/api/users', usersRouter)
   .use(unknownEndpoint, errorHandler);
 
