@@ -1,4 +1,5 @@
 const Blog = require('#@/models/blog');
+const { usersInDb } = require('#@/tests/users.helper');
 
 const payloadBlog = {
   title: 'packetstorm',
@@ -55,6 +56,12 @@ const blogsMultiple = [
   },
 ];
 
+const populateBlogs = async () => {
+  const user = (await usersInDb())[0];
+  const entries = blogsMultiple.map((_) => ({ ..._, user: user.id }));
+  return await Blog.collection.insertMany(entries);
+};
+
 const expectCount = async (expected) => {
   const blogCount = await Blog.countDocuments({});
   expect(blogCount).toBe(expected);
@@ -64,5 +71,6 @@ module.exports = {
   payloadBlog,
   blogsSingle,
   blogsMultiple,
+  populateBlogs,
   expectCount,
 };

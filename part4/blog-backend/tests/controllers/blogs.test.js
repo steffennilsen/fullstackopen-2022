@@ -6,7 +6,9 @@ const {
   payloadBlog,
   blogsMultiple,
   expectCount,
+  populateBlogs,
 } = require('#@/tests/blogs.helper');
+const { userList, populateUsers } = require('#@/tests/users.helper');
 const Blog = require('#@/models/blog');
 const db = require('#@/utils/mongoose');
 
@@ -18,8 +20,10 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await Blog.deleteMany({});
-  const res = await Blog.collection.insertMany(blogsMultiple);
+  await db.clear();
+  await populateUsers();
+
+  const res = await populateBlogs();
   blogIds = Object.values(res.insertedIds).map((_) => _.valueOf());
 });
 
@@ -115,6 +119,7 @@ describe(`GET ${PATH}/:id`, () => {
 
     const res = await api.get(`${PATH}/${id}`).expect(200);
     expect(res.body).toEqual(expected);
+    expect(res.body.user).toBeDefined();
   });
 
   it('should not find an invalid id', async () => {
@@ -136,7 +141,15 @@ describe(`PUT ${PATH}/:id`, () => {
     const target = blogs[0];
     const { id, title, author, url, likes } = target;
     const expectedLikes = 40;
-    const expected = { id, title, author, url, likes: expectedLikes };
+    const user = (await userList())[0]._id.toString();
+    const expected = {
+      id,
+      title,
+      author,
+      url,
+      likes: expectedLikes,
+      user,
+    };
 
     // sanity check
     expect(likes).not.toBe(expectedLikes);
@@ -152,7 +165,8 @@ describe(`PUT ${PATH}/:id`, () => {
   it('should insert document if no doc of id is found', async () => {
     const id = '000000000000000000000000';
     const { title, author, url, likes } = payloadBlog;
-    const expected = { id, title, author, url, likes };
+    const user = (await userList())[0]._id.toString();
+    const expected = { id, title, author, url, likes, user };
 
     const res = await api.put(`${PATH}/${id}`).send(payloadBlog).expect(201);
     expect(res.body).toEqual(expected);
@@ -181,7 +195,8 @@ describe(`PATCH ${PATH}/:id`, () => {
     const target = blogs[0];
     const { id, title, author, url, likes } = target;
     const expectedLikes = 120;
-    const expected = { id, title, author, url, likes: expectedLikes };
+    const user = (await userList())[0]._id.toString();
+    const expected = { id, title, author, url, likes: expectedLikes, user };
 
     // sanity check
     expect(likes).not.toBe(expectedLikes);
