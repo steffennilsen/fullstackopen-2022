@@ -1,6 +1,41 @@
-const morgan = require('morgan');
-const logger = require('#@/utils/logger');
+const { expressjwt } = require('express-jwt');
 const { NODE_ENV } = require('./config');
+const config = require('#@/utils/config');
+const logger = require('#@/utils/logger');
+const morgan = require('morgan');
+
+// const isRevoked = async (req, token) => {
+const isRevoked = async () => {
+  // const issuer = token.payload.iss;
+  // const tokenId = token.payload.jti;
+  // const token = await data.getRevokedToken(issuer, tokenId);
+  // return token !== 'undefined';
+  return false;
+};
+
+const authJwt = expressjwt({
+  secret: config.SECRET,
+  algorithms: ['HS256'],
+  isRevoked: isRevoked,
+});
+
+const tokenExtractor = (req, res, next) => {
+  if (req.token) {
+    next();
+  }
+
+  const authorization = req.get('authorization');
+  if (authorization) {
+    const regexp = new RegExp('^(bearer) (.*)$');
+    const matcher = authorization.match(regexp);
+
+    if (matcher && matcher[1] === 'bearer') {
+      req.token = matcher[2];
+    }
+  }
+
+  next();
+};
 
 const enforceJSONContentType = (req, res, next) => {
   if (req.get('Content-Type') !== 'application/json') {
@@ -61,11 +96,13 @@ const isTestEnv = NODE_ENV === 'test';
 const dummyMiddleware = (err, req, res, next) => next();
 
 module.exports = {
+  authJwt,
   enforceJSONContentType,
   enforcePasswordValidation,
-  jsonParseErrorHandler,
-  unknownEndpoint,
   errorHandler,
+  jsonParseErrorHandler,
   requestLogger,
+  tokenExtractor,
+  unknownEndpoint,
   ...(isTestEnv && { requestLogger: dummyMiddleware }),
 };

@@ -1,6 +1,5 @@
-const { SECRET } = require('#@/utils/config');
+const { createToken } = require('#@/utils/auth');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const loginRouter = require('express').Router();
 const User = require('../models/user');
 
@@ -17,16 +16,7 @@ loginRouter.post('/', async (request, response) => {
       error: 'invalid username or password',
     });
 
-  const token = jwt.sign(
-    {
-      username: user.username,
-      id: user._id,
-    },
-    SECRET,
-    {
-      expiresIn: 60 * 60,
-    },
-  );
+  const token = createToken(user);
 
   response
     .status(200)
