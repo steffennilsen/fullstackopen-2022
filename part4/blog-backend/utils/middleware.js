@@ -1,8 +1,10 @@
+const { decodeToken } = require('#@/utils/auth');
 const { expressjwt } = require('express-jwt');
 const { NODE_ENV } = require('./config');
 const config = require('#@/utils/config');
 const logger = require('#@/utils/logger');
 const morgan = require('morgan');
+const User = require('#@/models/user');
 
 // const isRevoked = async (req, token) => {
 const isRevoked = async () => {
@@ -19,9 +21,32 @@ const authJwt = expressjwt({
   isRevoked: isRevoked,
 });
 
+/**
+ * relies on token property being set
+ */
+const userExtractor = async (req, res, next) => {
+  if (req.user) {
+    return next();
+  }
+
+  const token = decodeToken(req.token);
+  const user = await User.findById(token.id);
+  req.user = user;
+
+  return next();
+};
+
+const userValidator = (req, res, next) => {
+  if (!req.user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  return next();
+};
+
 const tokenExtractor = (req, res, next) => {
   if (req.token) {
-    next();
+    return next();
   }
 
   const authorization = req.get('authorization');
@@ -34,7 +59,7 @@ const tokenExtractor = (req, res, next) => {
     }
   }
 
-  next();
+  return next();
 };
 
 const enforceJSONContentType = (req, res, next) => {
@@ -121,5 +146,7 @@ module.exports = {
   requestLogger,
   tokenExtractor,
   unknownEndpoint,
+  userExtractor,
+  userValidator,
   ...(isTestEnv && { requestLogger: dummyMiddleware }),
 };
