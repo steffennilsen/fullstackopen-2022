@@ -4,8 +4,6 @@ const api = supertest(app);
 
 const {
   userEntries,
-  userList,
-  expectCount,
   populateUsers,
   usersInDb,
 } = require('#@/tests/users.helper');

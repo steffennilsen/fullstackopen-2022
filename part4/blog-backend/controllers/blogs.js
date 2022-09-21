@@ -5,7 +5,6 @@ const {
   userExtractor,
   userValidator,
 } = require('#@/utils/middleware');
-const { decodeToken } = require('#@/utils/auth');
 const Blog = require('#@/models/blog');
 
 const router = express.Router();

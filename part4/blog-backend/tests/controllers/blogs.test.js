@@ -9,11 +9,7 @@ const {
   expectCount,
   populateBlogs,
 } = require('#@/tests/blogs.helper');
-const {
-  userList,
-  populateUsers,
-  userEntries,
-} = require('#@/tests/users.helper');
+const { userList, populateUsers } = require('#@/tests/users.helper');
 const Blog = require('#@/models/blog');
 const db = require('#@/utils/mongoose');
 const User = require('#@/models/user');
