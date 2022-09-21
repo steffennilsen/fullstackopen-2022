@@ -9,7 +9,11 @@ const {
   expectCount,
   populateBlogs,
 } = require('#@/tests/blogs.helper');
-const { userList, populateUsers } = require('#@/tests/users.helper');
+const {
+  userList,
+  populateUsers,
+  userEntries,
+} = require('#@/tests/users.helper');
 const Blog = require('#@/models/blog');
 const db = require('#@/utils/mongoose');
 const User = require('#@/models/user');
@@ -296,6 +300,21 @@ describe(`DELETE ${PATH}/:id`, () => {
       .delete(`${PATH}/${id}`)
       .set('Authorization', `bearer ${token}`)
       .expect(400);
+    await expectCount(blogsMultiple.length);
+  });
+
+  it('should reject deleting a blog which isnt owned by the token', async () => {
+    const users = await userList();
+    expect(users.length).toBeGreaterThanOrEqual(2);
+
+    const user = users[1];
+    const otherToken = createToken({ username: user.username, id: user._id });
+    const blogId = blogIds[0];
+
+    await api
+      .delete(`${PATH}/${blogId}`)
+      .set('Authorization', `bearer ${otherToken}`)
+      .expect(401);
     await expectCount(blogsMultiple.length);
   });
 });

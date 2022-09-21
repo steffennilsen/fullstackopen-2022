@@ -63,9 +63,17 @@ router.patch('/:id', authJwt, enforceJSONContentType, async (req, res) => {
   );
   return !!blog ? res.json(blog) : res.sendStatus(404);
 });
-router.delete('/:id', async (req, res) => {
-  const blog = await Blog.findByIdAndDelete(req.params.id, { new: true });
-  return !!blog ? res.json(blog) : res.sendStatus(404);
+router.delete('/:id', authJwt, async (req, res) => {
+  const decodedToken = decodeToken(req.token);
+  let blog = await Blog.findById(req.params.id);
+
+  if (!blog) return res.sendStatus(404);
+  const userId = blog.user.toString();
+  if (decodedToken.id !== userId) return res.sendStatus(401);
+
+  blog = await blog.remove();
+
+  return res.json(blog);
 });
 router.all('/:id', async (req, res) => res.sendStatus(405));
 

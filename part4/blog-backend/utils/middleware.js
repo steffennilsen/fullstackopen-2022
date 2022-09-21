@@ -87,6 +87,23 @@ const errorHandler = (err, req, res, next) => {
   } else if (err.name === 'ValidationError') {
     logger.warn(err.message);
     return res.status(400).json({ error: err.message });
+  } else if (
+    err.name === 'UnauthorizedError' ||
+    err.name === 'JsonWebTokenError'
+  ) {
+    if (
+      err.code === 'invalid_token' &&
+      err.inner &&
+      err.inner.name === 'TokenExpiredError'
+    ) {
+      return res.status(401).json({
+        error: 'token expired',
+      });
+    }
+
+    return res.status(401).json({
+      error: 'invalid token',
+    });
   }
 
   return next(err);
