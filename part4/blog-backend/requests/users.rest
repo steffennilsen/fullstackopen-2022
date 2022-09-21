@@ -1,0 +1,31 @@
+GET http://localhost:3003/api/users
+
+###
+GET http://localhost:3003/api/users/632aba880e7997cd5ab221fa
+
+###
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+  "username": "root",
+  "password": "banan123"
+}
+
+###
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+  "username": "studenta",
+  "password": "mybirthday"
+}
+
+###
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+  "username": "studentb",
+  "password": "itemondesk"
+}

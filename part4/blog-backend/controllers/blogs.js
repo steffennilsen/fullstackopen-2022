@@ -1,8 +1,8 @@
 const { enforceJSONContentType } = require('#@/utils/middleware');
 const express = require('express');
 const Blog = require('#@/models/blog');
+const User = require('#@/models/user');
 const router = express.Router();
-const { usersInDb } = require('#@/tests/users.helper');
 
 router.get('/', async (req, res) =>
   res.json(
@@ -11,8 +11,10 @@ router.get('/', async (req, res) =>
 );
 router.post('/', enforceJSONContentType, async (req, res) => {
   // temp set user to first in list
-  const user = (await usersInDb())[0];
+  const user = await User.findOne({});
   const blog = await new Blog({ ...req.body, user: user.id }).save();
+  user.blogs.push(blog.id);
+  await user.save();
   return res.status(201).json(blog);
 });
 router.all('/', async (req, res) => res.sendStatus(405));
@@ -27,7 +29,7 @@ router.get('/:id', async (req, res) => {
 });
 router.put('/:id', enforceJSONContentType, async (req, res) => {
   // temp set user to first in list
-  const user = (await usersInDb())[0];
+  const user = await User.findOne({});
   const blog = await Blog.findByIdAndUpdate(
     req.params.id,
     { ...req.body, user: user.id },

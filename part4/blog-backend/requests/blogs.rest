@@ -2,3 +2,33 @@ GET http://localhost:3003/api/blogs
 
 ###
 GET http://localhost:3003/api/blogs/6321bf5c11685dbd014fde4f
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "packetstorm",
+  "url": "127.0.0.1",
+  "author": "me"
+}
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "webdev",
+  "url": "10.0.0.1",
+  "author": "you"
+}
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "qwik",
+  "url": "10.0.0.1",
+  "author": "you"
+}
